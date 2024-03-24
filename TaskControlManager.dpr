@@ -2,13 +2,13 @@ program TaskControlManager;
 
 uses
   Vcl.Forms,
-  TasksListScreenUnit in 'TasksListScreenUnit.pas' {Form5};
+  TasksListScreenUnit in 'TasksListScreenUnit.pas' {TaskListForm};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TForm5, Form5);
+  Application.CreateForm(TTaskListForm, TaskListForm);
   Application.Run;
 end.
