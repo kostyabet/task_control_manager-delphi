@@ -108,6 +108,19 @@
             <Form>NewTaskForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="StoreUnit.pas">
+            <Form>StoreForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="ButtonFrame.pas">
+            <Form>Frame1</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="SettingsUnit.pas">
+            <Form>Form1</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
