@@ -1,14 +1,18 @@
-program TaskControlManager;
+Program TaskControlManager;
 
 uses
   Vcl.Forms,
-  TasksListScreenUnit in 'TasksListScreenUnit.pas' {TaskListForm};
+  TasksListScreenUnit in 'TasksListScreenUnit.pas' {TaskListForm},
+  NewTaskUnit in 'NewTaskUnit.pas' {NewTaskForm},
+  Vcl.Themes,
+  Vcl.Styles;
 
 {$R *.res}
 
-begin
-  Application.Initialize;
-  Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TTaskListForm, TaskListForm);
+Begin
+    Application.Initialize;
+    Application.MainFormOnTaskbar := True;
+    Application.CreateForm(TTaskListForm, TaskListForm);
   Application.Run;
-end.
+
+End.
