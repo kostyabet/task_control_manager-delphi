@@ -62,6 +62,8 @@ Type
         Procedure ExpPBoxPaint(Sender: TObject);
         Procedure HPPBoxPaint(Sender: TObject);
         Procedure AddTaskClick(Sender: TObject);
+    procedure StoreClick(Sender: TObject);
+    procedure SettingsClick(Sender: TObject);
     Private
         { Private declarations }
     Public
@@ -76,7 +78,7 @@ Implementation
 {$R *.dfm}
 
 Uses
-    NewTaskUnit;
+    NewTaskUnit, StoreUnit, SettingsUnit;
 
 Procedure TTaskListForm.FormCreate(Sender: TObject);
 Begin
@@ -207,6 +209,11 @@ Begin
     BitMap.Free();
 End;
 
+procedure TTaskListForm.StoreClick(Sender: TObject);
+begin
+    StoreForm.ShowModal;
+end;
+
 Procedure TTaskListForm.StoreMouseEnter(Sender: TObject);
 Begin
     Store.ImageIndex := 3;
@@ -236,6 +243,11 @@ Procedure TTaskListForm.RefferencessMouseLeave(Sender: TObject);
 Begin
     Refferencess.ImageIndex := 6;
 End;
+
+procedure TTaskListForm.SettingsClick(Sender: TObject);
+begin
+    Form1.ShowModal;
+end;
 
 Procedure TTaskListForm.SettingsMouseEnter(Sender: TObject);
 Begin

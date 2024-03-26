@@ -53,12 +53,14 @@ object TaskListForm: TTaskListForm
     Top = 356
     Width = 114
     Height = 31
+    Cursor = crHandPoint
     ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 2
     ImageName = 'OFFSTORE'
     Proportional = False
+    OnClick = StoreClick
     OnMouseEnter = StoreMouseEnter
     OnMouseLeave = StoreMouseLeave
   end
@@ -67,6 +69,7 @@ object TaskListForm: TTaskListForm
     Top = 356
     Width = 114
     Height = 31
+    Cursor = crHandPoint
     ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
@@ -81,6 +84,7 @@ object TaskListForm: TTaskListForm
     Top = 390
     Width = 113
     Height = 31
+    Cursor = crHandPoint
     ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
@@ -95,11 +99,13 @@ object TaskListForm: TTaskListForm
     Top = 390
     Width = 114
     Height = 31
+    Cursor = crHandPoint
     ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 8
     Proportional = False
+    OnClick = SettingsClick
     OnMouseEnter = SettingsMouseEnter
     OnMouseLeave = SettingsMouseLeave
   end
@@ -108,6 +114,7 @@ object TaskListForm: TTaskListForm
     Top = 371
     Width = 35
     Height = 35
+    Cursor = crHandPoint
     ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
@@ -625,12 +632,12 @@ object TaskListForm: TTaskListForm
   object Label4: TLabel
     Left = 126
     Top = 8
-    Width = 73
-    Height = 31
+    Width = 64
+    Height = 28
     Caption = #1050#1054#1057#1058#1071
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -23
+    Font.Height = -20
     Font.Name = 'Segoe UI'
     Font.Style = [fsBold]
     ParentFont = False
