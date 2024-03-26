@@ -167,6 +167,7 @@ object NewTaskForm: TNewTaskForm
     Top = 249
     Width = 100
     Height = 21
+    Cursor = crHandPoint
     ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
@@ -181,6 +182,7 @@ object NewTaskForm: TNewTaskForm
     Top = 249
     Width = 224
     Height = 21
+    Cursor = crHandPoint
     ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
@@ -195,6 +197,7 @@ object NewTaskForm: TNewTaskForm
     Top = 294
     Width = 435
     Height = 21
+    Cursor = crHandPoint
     ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
@@ -208,7 +211,7 @@ object NewTaskForm: TNewTaskForm
     Left = 56
     Top = 96
     Width = 307
-    Height = 21
+    Height = 23
     EditLabel.Width = 67
     EditLabel.Height = 15
     EditLabel.Caption = 'LabeledEdit1'
@@ -237,7 +240,7 @@ object NewTaskForm: TNewTaskForm
     Left = 54
     Top = 249
     Width = 307
-    Height = 21
+    Height = 23
     EditLabel.Width = 67
     EditLabel.Height = 15
     EditLabel.Caption = 'LabeledEdit1'
