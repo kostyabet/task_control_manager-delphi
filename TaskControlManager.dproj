@@ -121,6 +121,31 @@
             <Form>Form1</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="TaskUnit.pas"/>
+        <DCCReference Include="ViewControllerUnit.pas"/>
+        <DCCReference Include="InstractionUnit.pas">
+            <Form>InstractionForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="ProfileUnit.pas">
+            <Form>ProfileForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="TasksLinkedListUnit.pas"/>
+        <DCCReference Include="ViewSubTasksUnit.pas">
+            <Form>SubTasksForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="ChangeDataUnit.pas">
+            <Form>ChangeDataForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="TaskFrame.pas">
+            <Form>TaskOutputFrame</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="UserUnit.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
