@@ -22,39 +22,38 @@ Uses
     System.ImageList,
     Vcl.ImgList,
     Vcl.VirtualImageList,
-    ButtonFrame;
+    ButtonFrame,
+    TaskUnit;
 
 Type
     TNewTaskForm = Class(TForm)
-        Label1: TLabel;
-        PaintBox1: TPaintBox;
-        LabeledEdit1: TLabeledEdit;
-        Label2: TLabel;
-        Label3: TLabel;
-        Label4: TLabel;
-        DateTimePicker1: TDateTimePicker;
-        Label5: TLabel;
-        Label6: TLabel;
-        Memo1: TMemo;
-        Label7: TLabel;
-        Label8: TLabel;
-        LabeledEdit2: TLabeledEdit;
-        Label9: TLabel;
-        Label10: TLabel;
-        ComboBox1: TComboBox;
-        ImageCollection: TImageCollection;
-        VirtualImageList1: TVirtualImageList;
-        VirtualImage1: TVirtualImage;
-        VirtualImage2: TVirtualImage;
-        VirtualImage3: TVirtualImage;
+        HeadlineLabel: TLabel;
+        BackgroundPBox: TPaintBox;
+        TitleLEdit: TLabeledEdit;
+        TitleLabel: TLabel;
+        TitleLenLabel: TLabel;
+        DateLabel: TLabel;
+        DateTPicker: TDateTimePicker;
+        DateMarkLabel: TLabel;
+        AboutTaskLabel: TLabel;
+        AboutTaskMemo: TMemo;
+        AboutTaskLenLabel: TLabel;
+        SubTaskLabel: TLabel;
+        SubTitleLEdit: TLabeledEdit;
+        SubTitleLenLabel: TLabel;
+        ComplexityLabel: TLabel;
+        ComplexityCBox: TComboBox;
+        AddSubTaskFrame: TFrame1;
+        SubTasksListFrame: TFrame1;
+        ApplyFrame: TFrame1;
         Procedure FormCreate(Sender: TObject);
-        Procedure PaintBox1Paint(Sender: TObject);
-        Procedure VirtualImage1MouseEnter(Sender: TObject);
-        Procedure VirtualImage1MouseLeave(Sender: TObject);
-        Procedure VirtualImage2MouseEnter(Sender: TObject);
-        Procedure VirtualImage2MouseLeave(Sender: TObject);
-        Procedure VirtualImage3MouseEnter(Sender: TObject);
-        Procedure VirtualImage3MouseLeave(Sender: TObject);
+        Procedure BackgroundPBoxPaint(Sender: TObject);
+        Procedure SubTitleLEditChange(Sender: TObject);
+        Procedure TitleLEditChange(Sender: TObject);
+        Procedure AboutTaskMemoChange(Sender: TObject);
+        Procedure AddSubTaskFrameClick(Sender: TObject);
+        Procedure SubTasksListFrameClick(Sender: TObject);
+        Procedure ApplyFrameClick(Sender: TObject);
     Private
         { Private declarations }
     Public
@@ -63,86 +62,111 @@ Type
 
 Var
     NewTaskForm: TNewTaskForm;
+    NewTask: TTask;
 
 Implementation
 
 {$R *.dfm}
 
-Procedure TNewTaskForm.FormCreate(Sender: TObject);
+Uses
+    ViewControllerUnit,
+    TasksListScreenUnit,
+    ViewSubTasksUnit;
+
+Procedure TNewTaskForm.AboutTaskMemoChange(Sender: TObject);
 Begin
-    DateTimePicker1.Color := Rgb(202, 205, 221);
-    LabeledEdit1.Color := Rgb(202, 205, 221);
-    LabeledEdit2.Color := Rgb(202, 205, 221);
-    NewTaskForm.Color := Rgb(202, 205, 221);
-    ComboBox1.Color := RGB(202, 205, 221);
-    Memo1.Color := Rgb(202, 205, 221);
-
-    LabeledEdit1.EditLabel.Caption := '';
-    LabeledEdit2.EditLabel.Caption := '';
-
-    DateTimePicker1.Font.Color := Rgb(38, 43, 50);
-    LabeledEdit1.Font.Color := RGB(38, 43, 50);
-    LabeledEdit2.Font.Color := RGB(38, 43, 50);
-    ComboBox1.Font.Color := RGB(38, 43, 50);
-    Label10.Font.Color := RGB(38, 43, 50);
-    Label1.Font.Color := RGB(38, 43, 50);
-    Label2.Font.Color := RGB(38, 43, 50);
-    Label3.Font.Color := RGB(38, 43, 50);
-    Label4.Font.Color := RGB(38, 43, 50);
-    Label5.Font.Color := RGB(38, 43, 50);
-    Label6.Font.Color := RGB(38, 43, 50);
-    Label7.Font.Color := RGB(38, 43, 50);
-    Label8.Font.Color := RGB(38, 43, 50);
-    Label9.Font.Color := RGB(38, 43, 50);
-    Memo1.Font.Color := RGB(38, 43, 50);
+    ChangeEditShortText(AboutTaskLenLabel, AboutTaskMemo);
+    ApplyFrame.ButtonText.Enabled := CheckData(TitleLEdit.Text, AboutTaskMemo.Text);
+    ApplyFrame.BackGroundVirtmage.Enabled := CheckData(TitleLEdit.Text, AboutTaskMemo.Text);
+    ApplyFrame.Enabled := CheckData(TitleLEdit.Text, AboutTaskMemo.Text);
 End;
 
-Procedure TNewTaskForm.PaintBox1Paint(Sender: TObject);
+Procedure TNewTaskForm.FormCreate(Sender: TObject);
+Begin
+    DateTPicker.Date := Now;
+    SubTitleLEditChange(SubTitleLEdit);
+
+    DateTPicker.Color := Rgb(202, 205, 221);
+    TitleLEdit.Color := Rgb(202, 205, 221);
+    SubTitleLEdit.Color := Rgb(202, 205, 221);
+    NewTaskForm.Color := Rgb(202, 205, 221);
+    ComplexityCBox.Color := RGB(202, 205, 221);
+    AboutTaskMemo.Color := Rgb(202, 205, 221);
+
+    TitleLEdit.EditLabel.Caption := '';
+    SubTitleLEdit.EditLabel.Caption := '';
+
+    DateTPicker.Font.Color := Rgb(38, 43, 50);
+    TitleLEdit.Font.Color := RGB(38, 43, 50);
+    SubTitleLEdit.Font.Color := RGB(38, 43, 50);
+    ComplexityCBox.Font.Color := RGB(38, 43, 50);
+    ComplexityLabel.Font.Color := RGB(38, 43, 50);
+    HeadlineLabel.Font.Color := RGB(38, 43, 50);
+    TitleLabel.Font.Color := RGB(38, 43, 50);
+    TitleLenLabel.Font.Color := RGB(38, 43, 50);
+    DateLabel.Font.Color := RGB(38, 43, 50);
+    DateMarkLabel.Font.Color := RGB(38, 43, 50);
+    AboutTaskLabel.Font.Color := RGB(38, 43, 50);
+    AboutTaskLenLabel.Font.Color := RGB(38, 43, 50);
+    SubTaskLabel.Font.Color := RGB(38, 43, 50);
+    SubTitleLenLabel.Font.Color := RGB(38, 43, 50);
+    AboutTaskMemo.Font.Color := RGB(38, 43, 50);
+
+    ChangeEditShortText(TitleLenLabel, TitleLEdit);
+    ChangeEditShortText(SubTitleLenLabel, SubTitleLEdit);
+    ChangeEditShortText(AboutTaskLenLabel, AboutTaskMemo);
+End;
+
+Procedure TNewTaskForm.AddSubTaskFrameClick(Sender: TObject);
+Begin
+    NewTask.InputNewSubTask(SubTitleLEdit.Text);
+    SubTitleLEdit.Text := '';
+End;
+
+Procedure TNewTaskForm.SubTasksListFrameClick(Sender: TObject);
+Begin
+    Application.CreateForm(TSubTasksForm, SubTasksForm);
+    SubTasksForm.ShowModal;
+End;
+
+Procedure TNewTaskForm.ApplyFrameClick(Sender: TObject);
+Begin
+    ChoosenOpenButton := Info;
+    NewTaskForm.Close;
+End;
+
+Procedure TNewTaskForm.SubTitleLEditChange(Sender: TObject);
+Begin
+    ChangeEditShortText(SubTitleLenLabel, SubTitleLEdit);
+    AddSubTaskFrame.ButtonText.Enabled := Not(Trim(SubTitleLEdit.Text) = '');
+    AddSubTaskFrame.BackGroundVirtmage.Enabled := Not(Trim(SubTitleLEdit.Text) = '');
+    AddSubTaskFrame.Enabled := Not(Trim(SubTitleLEdit.Text) = '');
+End;
+
+Procedure TNewTaskForm.TitleLEditChange(Sender: TObject);
+Begin
+    ChangeEditShortText(TitleLenLabel, TitleLEdit);
+    ApplyFrame.ButtonText.Enabled := CheckData(TitleLEdit.Text, AboutTaskMemo.Text);
+    ApplyFrame.BackGroundVirtmage.Enabled := CheckData(TitleLEdit.Text, AboutTaskMemo.Text);
+    ApplyFrame.Enabled := CheckData(TitleLEdit.Text, AboutTaskMemo.Text);
+End;
+
+Procedure TNewTaskForm.BackgroundPBoxPaint(Sender: TObject);
 Var
     BitMap: TBitmap;
     Rect: TRect;
     Radius: Integer;
 Begin
     BitMap := TBitmap.Create();
-    Rect := PaintBox1.ClientRect;
-    BitMap.Height := PaintBox1.Height;
-    BitMap.Width := PaintBox1.Width;
+    Rect := BackgroundPBox.ClientRect;
+    BitMap.Height := BackgroundPBox.Height;
+    BitMap.Width := BackgroundPBox.Width;
     Radius := 30;
-    PaintBox1.Canvas.Brush.Color := Rgb(169, 174, 187);
-    PaintBox1.Canvas.Pen.Color := Rgb(179, 188, 206);
-    PaintBox1.Canvas.Pen.Width := 10;
-    PaintBox1.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right, Rect.Bottom, Radius, Radius);
+    BackgroundPBox.Canvas.Brush.Color := Rgb(169, 174, 187);
+    BackgroundPBox.Canvas.Pen.Color := Rgb(179, 188, 206);
+    BackgroundPBox.Canvas.Pen.Width := 10;
+    BackgroundPBox.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right, Rect.Bottom, Radius, Radius);
     BitMap.Free();
-End;
-
-Procedure TNewTaskForm.VirtualImage1MouseEnter(Sender: TObject);
-Begin
-    VirtualImage1.ImageIndex := 1;
-End;
-
-Procedure TNewTaskForm.VirtualImage1MouseLeave(Sender: TObject);
-Begin
-    VirtualImage1.ImageIndex := 0;
-End;
-
-Procedure TNewTaskForm.VirtualImage2MouseEnter(Sender: TObject);
-Begin
-    VirtualImage2.ImageIndex := 3;
-End;
-
-Procedure TNewTaskForm.VirtualImage2MouseLeave(Sender: TObject);
-Begin
-    VirtualImage2.ImageIndex := 2;
-End;
-
-Procedure TNewTaskForm.VirtualImage3MouseEnter(Sender: TObject);
-Begin
-    VirtualImage3.ImageIndex := 5;
-End;
-
-Procedure TNewTaskForm.VirtualImage3MouseLeave(Sender: TObject);
-Begin
-    VirtualImage3.ImageIndex := 4;
 End;
 
 End.
