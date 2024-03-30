@@ -19,13 +19,11 @@ Uses
 
 Type
     TFrame1 = Class(TFrame)
-        ImageCollection1: TImageCollection;
-        VirtualImage1: TVirtualImage;
-        Label1: TLabel;
-        Procedure VirtualImage1MouseLeave(Sender: TObject);
-        Procedure VirtualImage1MouseEnter(Sender: TObject);
-        Procedure Label1MouseEnter(Sender: TObject);
-        Procedure Label1MouseLeave(Sender: TObject);
+        ImageCollection: TImageCollection;
+        BackGroundVirtmage: TVirtualImage;
+        ButtonText: TLabel;
+        Procedure MouseLeave(Sender: TObject);
+        Procedure MouseEnter(Sender: TObject);
     Private
         { Private declarations }
     Public
@@ -36,24 +34,14 @@ Implementation
 
 {$R *.dfm}
 
-Procedure TFrame1.Label1MouseEnter(Sender: TObject);
+Procedure TFrame1.MouseLeave(Sender: TObject);
 Begin
-    VirtualImage1.ImageIndex := 1;
+    BackGroundVirtmage.ImageIndex := 0;
 End;
 
-Procedure TFrame1.Label1MouseLeave(Sender: TObject);
+Procedure TFrame1.MouseEnter(Sender: TObject);
 Begin
-    VirtualImage1.ImageIndex := 0;
-End;
-
-Procedure TFrame1.VirtualImage1MouseEnter(Sender: TObject);
-Begin
-    VirtualImage1.ImageIndex := 1;
-End;
-
-Procedure TFrame1.VirtualImage1MouseLeave(Sender: TObject);
-Begin
-    VirtualImage1.ImageIndex := 0;
+    BackGroundVirtmage.ImageIndex := 1;
 End;
 
 End.
