@@ -283,11 +283,14 @@ Begin
 End;
 
 Destructor TTask.Destroy;
+Var
+    I: Integer;
 Begin
     Dispose(FHeadSubTask);
     FHeadSubTask := Nil;
     Dispose(FTailSubTask);
     FTailSubTask := Nil;
+    ClearArray;
 End;
 
 Procedure TTask.InputSubTaskNumber(Index, Counter, Left, Top, Height: Integer);
