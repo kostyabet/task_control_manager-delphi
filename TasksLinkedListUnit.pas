@@ -27,8 +27,6 @@ Uses
     UserUnit;
 
 Type
-    TArrayOfTasks = Array Of TTask;
-
     TListOfTasks = Class
     Type
         PTasks = ^TaskLinkedList;
@@ -53,14 +51,41 @@ Type
         Destructor Destroy;
         Procedure AddTaskInList(Task: TTask);
         Procedure DrawTasks(Canvas: TCanvas; Left, Top, Width, Height: Integer);
-        Function ConvertToArray: TArrayOfTasks;
-        Procedure CreateNewObject();
+        Procedure RemoveCurentTask(Index: Integer);
     End;
 
 Implementation
 
 Uses
     TasksListScreenUnit;
+
+Procedure TListOfTasks.RemoveCurentTask(Index: Integer);
+Var
+    CurentTask: PTasks;
+Begin
+    CurentTask := SearchCurentTask(Index).Next;
+    If CurentTask = FHeadTasks.Next Then
+    Begin
+        If (CurentTask.Next <> Nil) Then
+            CurentTask.Next.Prev := FHeadTasks;
+        FHeadTasks.Next := CurentTask.Next;
+    End;
+    
+    If CurentTask = FTailTasks Then
+    Begin
+        FTailTasks := CurentTask.Prev;
+        CurentTask.Prev.Next := Nil;
+    End
+    Else
+    Begin
+        CurentTask.Next.Prev := CurentTask.Prev;
+        CurentTask.Prev.Next := CurentTask.Next;
+    End;
+
+    Dec(FTasksCounter);
+    Dispose(CurentTask);
+    CurentTask := Nil;
+End;
 
 Constructor TListOfTasks.Create;
 Begin
@@ -109,7 +134,7 @@ Begin
     ObjectTask.DeadLineLabel.Caption := 'Сделать до: ' + DateToStr(CurentTask.Data.GetDate(CurentTask.Data));
     ObjectTask.AboutLabel.Caption := CurentTask.Data.GetAbout(CurentTask.Data);
     ObjectTask.SubTasksResLabel.Caption := CurentTask.Data.GetSubTasksInfo(CurentTask.Data);
-    
+
     Complexity := CurentTask.Data.GetComplexity(CurentTask.Data);
     ObjectTask.XPLabel.Caption := IntToStr(User.GetTaskXP(Complexity));
     ObjectTask.HpLabel.Caption := IntToStr(User.GetTaskHP(Complexity));
@@ -143,11 +168,6 @@ Begin
     End;
 End;
 
-Procedure TListOfTasks.CreateNewObject();
-Begin
-    /// //////
-End;
-
 Procedure TListOfTasks.AddTaskInList(Task: TTask);
 Var
     NewTask: PTasks;
@@ -167,23 +187,6 @@ Begin
     FHeadTasks := Nil;
     Dispose(FTailTasks);
     FTailTasks := Nil;
-End;
-
-Function TListOfTasks.ConvertToArray: TArrayOfTasks;
-Var
-    ArrayOfTasks: TArrayOfTasks;
-    BufHeadTasks: PTasks;
-    Counter: Integer;
-Begin
-    Counter := 0;
-    SetLength(ArrayOfTasks, FTasksCounter);
-    BufHeadTasks := FHeadTasks;
-    While BufHeadTasks = Nil Do
-    Begin
-        ArrayOfTasks[Counter] := BufHeadTasks.Data;
-        BufHeadTasks := BufHeadTasks.Next;
-    End;
-    ConvertToArray := ArrayOfTasks;
 End;
 
 End.
