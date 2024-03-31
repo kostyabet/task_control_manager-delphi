@@ -40,7 +40,6 @@ Const
 
 Var
     SubTasksForm: TSubTasksForm;
-    ArrayOfTasks: TArrayOfTasks;
 
 Implementation
 

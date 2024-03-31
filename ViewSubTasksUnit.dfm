@@ -4,8 +4,8 @@ object SubTasksForm: TSubTasksForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1055#1086#1076#1079#1072#1076#1072#1095#1080
-  ClientHeight = 312
-  ClientWidth = 535
+  ClientHeight = 303
+  ClientWidth = 529
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
