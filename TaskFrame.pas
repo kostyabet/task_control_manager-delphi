@@ -40,7 +40,7 @@ Type
         Procedure DblClick(Sender: TObject);
         Procedure ApplyButtonClick(Sender: TObject);
     Private
-        { Private declarations }
+        Function GetCurentObjectIndex(Sender: TObject): Integer;
     Public
         { Public declarations }
     End;
@@ -56,15 +56,28 @@ Uses
     NewTaskUnit,
     TaskUnit;
 
+Function TTaskOutputFrame.GetCurentObjectIndex(Sender: TObject): Integer;
+Var
+    I, Index: Integer;
+Begin
+    Index := -1;
+    For I := 0 To High(FArrayOfBlocks) Do
+        If (Sender = FArrayOfBlocks[I].ChangeSubTasksFrame.ButtonText) Or
+            (Sender = FArrayOfBlocks[I].ChangeSubTasksFrame.BackGroundVirtmage) Or (Sender = FArrayOfBlocks[I].TaskLabel) Or
+            (Sender = FArrayOfBlocks[I].DeadLineLabel) Or (Sender = FArrayOfBlocks[I].AboutLabel) Or
+            (Sender = FArrayOfBlocks[I].ComplexityVImage) Or (Sender = FArrayOfBlocks[I].BackGroundVImage) Or
+            (Sender = FArrayOfBlocks[I].ApplyButtonFrame.ButtonText) Or
+            (Sender = FArrayOfBlocks[I].ApplyButtonFrame.BackGroundVirtmage) Then
+            Index := I;
+    GetCurentObjectIndex := Index;
+End;
+
 Procedure TTaskOutputFrame.DblClick(Sender: TObject);
 Var
     Complexity: TComplexity;
-    I, Index: Integer;
+    Index: Integer;
 Begin
-    For I := 0 To High(FArrayOfBlocks) Do
-        If (Sender = FArrayOfBlocks[I].TaskLabel) Or (Sender = FArrayOfBlocks[I].DeadLineLabel) Or (Sender = FArrayOfBlocks[I].AboutLabel)
-            Or (Sender = FArrayOfBlocks[I].ComplexityVImage) Or (Sender = FArrayOfBlocks[I].BackGroundVImage) Then
-            Index := I;
+    Index := GetCurentObjectIndex(Sender);
     NewTask := TasksList.SearchCurentTask(Index).Data;
     Application.CreateForm(TNewTaskForm, NewTaskForm);
     NewTaskForm.TitleLEdit.Text := NewTask.FTaskData.Title;
@@ -85,29 +98,25 @@ End;
 Procedure TTaskOutputFrame.ApplyButtonClick(Sender: TObject);
 Var
     ResultKey: Integer;
-    XP, HP, Money: Integer;
+    XP, HP, Money, Index: Integer;
 Begin
     ResultKey := Application.Messagebox('Вы уверенны, что хотите завершить задачу?', 'Сохранение',
         MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2);
     If (ResultKey = ID_YES) Then
     Begin
-        XP := StrToInt(XPLabel.Caption);
-        HP := StrToInt(HPLabel.Caption);
-        Money := StrToInt(MoneyLabel.Caption);
-        User.ApplyNewTask(XP, HP, Money);
+        User.ApplyNewTask(StrToInt(XPLabel.Caption), StrToInt(HPLabel.Caption), StrToInt(MoneyLabel.Caption));
         TaskListForm.UpDateUserInfo;
-        //RemoveCurentTask();
+        Index := GetCurentObjectIndex(Sender);
+        TasksList.RemoveCurentTask(Index - 1);
+        TaskListForm.RemoveCompleteTask(Index);
     End;
 End;
 
 Procedure TTaskOutputFrame.ChangeSubTasksFrameClick(Sender: TObject);
 Var
-    I, Index: Integer;
+    Index: Integer;
 Begin
-    For I := 0 To High(FArrayOfBlocks) Do
-        If (Sender = FArrayOfBlocks[I].ChangeSubTasksFrame.ButtonText) Or
-            (Sender = FArrayOfBlocks[I].ChangeSubTasksFrame.BackGroundVirtmage) Then
-            Index := I;
+    Index := GetCurentObjectIndex(Sender);
     NewTask := TasksList.SearchCurentTask(Index).Data;
     Application.CreateForm(TSubTasksForm, SubTasksForm);
     SubTasksForm.ShowModal;
