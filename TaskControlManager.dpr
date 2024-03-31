@@ -17,7 +17,8 @@ uses
   ViewSubTasksUnit in 'ViewSubTasksUnit.pas' {SubTasksForm},
   ChangeDataUnit in 'ChangeDataUnit.pas' {ChangeDataForm},
   TaskFrame in 'TaskFrame.pas' {TaskOutputFrame: TFrame},
-  UserUnit in 'UserUnit.pas';
+  UserUnit in 'UserUnit.pas',
+  BustOutputFrame in 'BustOutputFrame.pas' {BustFrame: TFrame};
 
 {$R *.res}
 
@@ -25,7 +26,6 @@ Begin
     Application.Initialize;
     Application.MainFormOnTaskbar := True;
     Application.CreateForm(TTaskListForm, TaskListForm);
-  Application.CreateForm(TStoreForm, StoreForm);
   Application.CreateForm(TForm1, Form1);
   Application.CreateForm(TInstractionForm, InstractionForm);
   Application.CreateForm(TProfileForm, ProfileForm);
