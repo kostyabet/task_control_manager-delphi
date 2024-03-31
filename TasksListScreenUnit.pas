@@ -26,7 +26,8 @@ Uses
     TasksLinkedListUnit,
     TaskFrame,
     TaskUnit,
-    UserUnit;
+    UserUnit,
+    BustOutputFrame;
 
 Type
     TTaskListForm = Class(TForm)
@@ -43,21 +44,28 @@ Type
         HPLabel: TLabel;
         XPBox: TPaintBox;
         HPPBox: TPaintBox;
-        Frame11: TFrame1;
-        Frame12: TFrame1;
-        Frame13: TFrame1;
-        Frame14: TFrame1;
+        StoreButtonFrame: TFrame1;
+        ProfileFrame: TFrame1;
+        SettingsFrame: TFrame1;
+        InstractionFrame: TFrame1;
         AddTaskFrame: TFrame1;
         TasksListSclBox: TScrollBox;
         ImageCollection: TImageCollection;
+        HPFrame: TBustFrame;
+    CoinsFrame: TBustFrame;
+        XPFrame: TBustFrame;
+        TotemFrame: TBustFrame;
+        HPBustFrame: TBustFrame;
+        FreeTaskFrame: TBustFrame;
+        XPBustFrame: TBustFrame;
+        SecretBoxFrame: TBustFrame;
         Procedure FormCreate(Sender: TObject);
         Procedure PaintBox2Paint(Sender: TObject);
         Procedure TasksListPaintBoxPaint(Sender: TObject);
         Procedure MenuBackGroundPaint(Sender: TObject);
         Procedure HPPBoxPaint(Sender: TObject);
         Procedure XPBoxPaint(Sender: TObject);
-        Procedure Frame11VirtualImage1Click(Sender: TObject);
-        Procedure Frame11Label1Click(Sender: TObject);
+        Procedure StoreButtonFrameClick(Sender: TObject);
         Procedure Frame13Label1Click(Sender: TObject);
         Procedure Frame13VirtualImage1Click(Sender: TObject);
         Procedure Frame15VirtualImage1Click(Sender: TObject);
@@ -72,7 +80,7 @@ Type
     Private
         { Private declarations }
     Public
-        { Public declarations }
+        Procedure RemoveCompleteTask(Index: Integer);
     End;
 
 Type
@@ -97,11 +105,29 @@ Uses
     InstractionUnit,
     ProfileUnit;
 
+Procedure TTaskListForm.RemoveCompleteTask(Index: Integer);
+Var
+    TempArr: TArrayOfBlocks;
+    I: Integer;
+Begin
+    SetLength(TempArr, Length(FArrayOfBlocks) - 1);
+    For I := Low(FArrayOfBlocks) To High(FArrayOfBlocks) Do
+        If (I <> Index) Then
+        Begin
+            TempArr[I - Ord(I > Index)] := FArrayOfBlocks[I];
+            TempArr[I - Ord(I > Index)].Top := 8 + (I - Ord(I > Index)) * (8 + TempArr[I - Ord(I > Index)].Height);
+        End
+        Else
+            FArrayOfBlocks[I].Destroy;
+
+    FArrayOfBlocks := Copy(TempArr);
+End;
+
 Procedure TTaskListForm.UpDateUserInfo();
 Begin
     XPBoxPaint(TaskListForm.XPBox);
     XPBox.Hint := IntToStr(User.XP) + '/' + IntToStr(User.MaxXP);
-    HPPBoxPaint(TaskListForm.HPPBox); 
+    HPPBoxPaint(TaskListForm.HPPBox);
     HPPBox.Hint := IntToStr(User.HP) + '/' + IntToStr(User.MaxHP);
     LvlLabel.Caption := IntToStr(User.CurentLvl);
     CoinsLabel.Caption := IntToStr(User.Coins);
@@ -134,13 +160,9 @@ Begin
     TaskListForm.Color := RGB(202, 205, 221);
 End;
 
-Procedure TTaskListForm.Frame11Label1Click(Sender: TObject);
+Procedure TTaskListForm.StoreButtonFrameClick(Sender: TObject);
 Begin
-    StoreForm.ShowModal;
-End;
-
-Procedure TTaskListForm.Frame11VirtualImage1Click(Sender: TObject);
-Begin
+    Application.CreateForm(TStoreForm, StoreForm);
     StoreForm.ShowModal;
 End;
 

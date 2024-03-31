@@ -604,7 +604,7 @@ object TaskListForm: TTaskListForm
     ShowHint = True
     OnPaint = HPPBoxPaint
   end
-  inline Frame11: TFrame1
+  inline StoreButtonFrame: TFrame1
     Left = 10
     Top = 356
     Width = 114
@@ -617,7 +617,7 @@ object TaskListForm: TTaskListForm
     inherited BackGroundVirtmage: TVirtualImage
       Width = 114
       Height = 31
-      OnClick = Frame11VirtualImage1Click
+      OnClick = StoreButtonFrameClick
       ExplicitWidth = 114
       ExplicitHeight = 31
     end
@@ -628,14 +628,14 @@ object TaskListForm: TTaskListForm
       Height = 17
       Caption = #1052#1040#1043#1040#1047#1048#1053
       Font.Height = -13
-      OnClick = Frame11Label1Click
+      OnClick = StoreButtonFrameClick
       ExplicitLeft = 26
       ExplicitTop = 6
       ExplicitWidth = 63
       ExplicitHeight = 17
     end
   end
-  inline Frame12: TFrame1
+  inline ProfileFrame: TFrame1
     Left = 126
     Top = 356
     Width = 114
@@ -666,7 +666,7 @@ object TaskListForm: TTaskListForm
       ExplicitHeight = 17
     end
   end
-  inline Frame13: TFrame1
+  inline SettingsFrame: TFrame1
     Left = 10
     Top = 390
     Width = 114
@@ -697,7 +697,7 @@ object TaskListForm: TTaskListForm
       ExplicitHeight = 17
     end
   end
-  inline Frame14: TFrame1
+  inline InstractionFrame: TFrame1
     Left = 127
     Top = 390
     Width = 114
@@ -777,6 +777,140 @@ object TaskListForm: TTaskListForm
       Width = 620
       Height = 409
       OnPaint = TasksListPaintBoxPaint
+    end
+  end
+  inline HPFrame: TBustFrame
+    Left = 18
+    Top = 138
+    Width = 49
+    Height = 96
+    TabOrder = 6
+    ExplicitLeft = 18
+    ExplicitTop = 138
+    inherited BackGroundVImage: TVirtualImage
+      Proportional = False
+    end
+    inherited BustVImage: TVirtualImage
+      ImageIndex = 1
+      ImageName = 'HEALTHBUFF'
+    end
+  end
+  inline CoinsFrame: TBustFrame
+    Left = 18
+    Top = 242
+    Width = 49
+    Height = 96
+    TabOrder = 7
+    ExplicitLeft = 18
+    ExplicitTop = 242
+    inherited BackGroundVImage: TVirtualImage
+      Proportional = False
+    end
+    inherited BustVImage: TVirtualImage
+      ImageIndex = 5
+      ImageName = 'MONEYTICKET'
+    end
+  end
+  inline XPFrame: TBustFrame
+    Left = 72
+    Top = 138
+    Width = 49
+    Height = 96
+    TabOrder = 8
+    ExplicitLeft = 72
+    ExplicitTop = 138
+    inherited BackGroundVImage: TVirtualImage
+      Proportional = False
+    end
+    inherited BustVImage: TVirtualImage
+      Left = 6
+      ImageIndex = 2
+      ImageName = 'EXPBUFF'
+      ExplicitLeft = 6
+    end
+  end
+  inline TotemFrame: TBustFrame
+    Left = 72
+    Top = 242
+    Width = 49
+    Height = 96
+    TabOrder = 9
+    ExplicitLeft = 72
+    ExplicitTop = 242
+    inherited BackGroundVImage: TVirtualImage
+      Proportional = False
+    end
+    inherited BustVImage: TVirtualImage
+      ImageIndex = 6
+      ImageName = 'TOTEM'
+    end
+  end
+  inline HPBustFrame: TBustFrame
+    Left = 127
+    Top = 138
+    Width = 49
+    Height = 96
+    TabOrder = 10
+    ExplicitLeft = 127
+    ExplicitTop = 138
+    inherited BackGroundVImage: TVirtualImage
+      Proportional = False
+    end
+    inherited BustVImage: TVirtualImage
+      Left = 6
+      ImageIndex = 3
+      ImageName = 'HPTICKET'
+      ExplicitLeft = 6
+    end
+  end
+  inline FreeTaskFrame: TBustFrame
+    Left = 127
+    Top = 242
+    Width = 49
+    Height = 96
+    TabOrder = 11
+    ExplicitLeft = 127
+    ExplicitTop = 242
+    inherited BackGroundVImage: TVirtualImage
+      Proportional = False
+    end
+    inherited BustVImage: TVirtualImage
+      ImageIndex = 7
+      ImageName = 'FREETASK'
+    end
+  end
+  inline XPBustFrame: TBustFrame
+    Left = 181
+    Top = 138
+    Width = 49
+    Height = 96
+    TabOrder = 12
+    ExplicitLeft = 181
+    ExplicitTop = 138
+    inherited BackGroundVImage: TVirtualImage
+      Proportional = False
+    end
+    inherited BustVImage: TVirtualImage
+      Left = 6
+      ImageIndex = 4
+      ImageName = 'XPTICKET'
+      ExplicitLeft = 6
+    end
+  end
+  inline SecretBoxFrame: TBustFrame
+    Left = 181
+    Top = 242
+    Width = 49
+    Height = 96
+    TabOrder = 13
+    ExplicitLeft = 181
+    ExplicitTop = 242
+    inherited BackGroundVImage: TVirtualImage
+      Proportional = False
+    end
+    inherited BustVImage: TVirtualImage
+      ImageIndex = 8
+      ImageName = 'SECRETBOX'
     end
   end
   object ImageCollection: TImageCollection
@@ -932,7 +1066,7 @@ object TaskListForm: TTaskListForm
               540000000049454E44AE426082}
           end>
       end>
-    Left = 16
+    Left = 312
     Top = 136
   end
 end
