@@ -16,7 +16,7 @@ object StoreForm: TStoreForm
   Position = poScreenCenter
   OnCreate = FormCreate
   TextHeight = 15
-  object Label1: TLabel
+  object TitleLabel: TLabel
     Left = 220
     Top = 15
     Width = 89
@@ -29,199 +29,199 @@ object StoreForm: TStoreForm
     Font.Style = [fsBold]
     ParentFont = False
   end
-  object PaintBox1: TPaintBox
+  object StoreFontPBox: TPaintBox
     Left = 15
     Top = 52
     Width = 498
     Height = 307
     Constraints.MaxHeight = 307
     Constraints.MaxWidth = 498
-    OnPaint = PaintBox1Paint
+    OnPaint = StoreFontPBoxPaint
   end
-  object VirtualImage1: TVirtualImage
+  object BackGroundHP: TVirtualImage
     Left = 50
     Top = 67
     Width = 76
     Height = 112
-    ImageCollection = ImageCollection1
+    ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 2
     ImageName = 'STOREFONE'
   end
-  object VirtualImage17: TVirtualImage
+  object FreeHP: TVirtualImage
     Left = 58
     Top = 79
     Width = 60
     Height = 85
-    ImageCollection = ImageCollection1
+    ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 3
     ImageName = 'HEALTHBUFF'
   end
-  object VirtualImage2: TVirtualImage
+  object BackGroundTothem: TVirtualImage
     Left = 167
     Top = 208
     Width = 76
     Height = 112
-    ImageCollection = ImageCollection1
+    ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 2
     ImageName = 'STOREFONE'
   end
-  object VirtualImage23: TVirtualImage
+  object TothemBust: TVirtualImage
     Left = 176
     Top = 222
     Width = 60
     Height = 85
-    ImageCollection = ImageCollection1
+    ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 9
     ImageName = 'TOTEM'
   end
-  object VirtualImage3: TVirtualImage
+  object BackGroundHPBust: TVirtualImage
     Left = 284
     Top = 67
     Width = 76
     Height = 112
-    ImageCollection = ImageCollection1
+    ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 2
     ImageName = 'STOREFONE'
   end
-  object VirtualImage4: TVirtualImage
+  object BackGroundXPbust: TVirtualImage
     Left = 401
     Top = 67
     Width = 76
     Height = 112
-    ImageCollection = ImageCollection1
+    ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 2
     ImageName = 'STOREFONE'
   end
-  object VirtualImage5: TVirtualImage
+  object BackGoundCoins: TVirtualImage
     Left = 50
     Top = 208
     Width = 76
     Height = 112
-    ImageCollection = ImageCollection1
+    ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 2
     ImageName = 'STOREFONE'
   end
-  object VirtualImage6: TVirtualImage
+  object BackGroundSecretBox: TVirtualImage
     Left = 401
     Top = 208
     Width = 76
     Height = 112
-    ImageCollection = ImageCollection1
+    ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 2
     ImageName = 'STOREFONE'
   end
-  object VirtualImage7: TVirtualImage
+  object BackGroundFreeTask: TVirtualImage
     Left = 284
     Top = 208
     Width = 76
     Height = 112
-    ImageCollection = ImageCollection1
+    ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 2
     ImageName = 'STOREFONE'
   end
-  object VirtualImage8: TVirtualImage
+  object BackGroundEXP: TVirtualImage
     Left = 167
     Top = 67
     Width = 76
     Height = 112
-    ImageCollection = ImageCollection1
+    ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 2
     ImageName = 'STOREFONE'
   end
-  object VirtualImage21: TVirtualImage
+  object CoinsBust: TVirtualImage
     Left = 58
     Top = 223
     Width = 60
     Height = 85
-    ImageCollection = ImageCollection1
+    ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 7
     ImageName = 'MONEYTICKET'
   end
-  object VirtualImage18: TVirtualImage
+  object FreeXP: TVirtualImage
     Left = 176
     Top = 79
     Width = 60
     Height = 85
-    ImageCollection = ImageCollection1
+    ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 4
     ImageName = 'EXPBUFF'
   end
-  object VirtualImage22: TVirtualImage
+  object FreeTaskBust: TVirtualImage
     Left = 293
     Top = 222
     Width = 60
     Height = 85
-    ImageCollection = ImageCollection1
+    ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 8
     ImageName = 'FREETASK'
   end
-  object VirtualImage19: TVirtualImage
+  object FreeHPBust: TVirtualImage
     Left = 293
     Top = 79
     Width = 60
     Height = 85
-    ImageCollection = ImageCollection1
+    ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 5
     ImageName = 'HPTICKET'
   end
-  object VirtualImage24: TVirtualImage
+  object SecretBox: TVirtualImage
     Left = 409
     Top = 222
     Width = 60
     Height = 85
-    ImageCollection = ImageCollection1
+    ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 10
     ImageName = 'SECRETBOX'
   end
-  object VirtualImage20: TVirtualImage
+  object FreeXPBust: TVirtualImage
     Left = 409
     Top = 79
     Width = 60
     Height = 85
-    ImageCollection = ImageCollection1
+    ImageCollection = ImageCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 6
     ImageName = 'XPTICKET'
   end
-  object Label2: TLabel
+  object CoinsLabel: TLabel
     Left = 43
     Top = 31
     Width = 6
     Height = 15
     Caption = '0'
   end
-  object Image2: TImage
+  object CoinsImage: TImage
     Left = 22
     Top = 31
     Width = 15
@@ -239,7 +239,7 @@ object StoreForm: TStoreForm
       00000049454E44AE426082}
     Stretch = True
   end
-  inline Frame11: TFrame1
+  inline HPBustFrame: TFrame1
     Left = 284
     Top = 182
     Width = 76
@@ -247,8 +247,14 @@ object StoreForm: TStoreForm
     TabOrder = 0
     ExplicitLeft = 284
     ExplicitTop = 182
+    inherited BackGroundVirtmage: TVirtualImage
+      OnClick = ButtonFrameBuyClick
+    end
+    inherited ButtonText: TLabel
+      OnClick = ButtonFrameBuyClick
+    end
   end
-  inline Frame12: TFrame1
+  inline HPFrame: TFrame1
     Left = 50
     Top = 182
     Width = 76
@@ -256,8 +262,14 @@ object StoreForm: TStoreForm
     TabOrder = 1
     ExplicitLeft = 50
     ExplicitTop = 182
+    inherited BackGroundVirtmage: TVirtualImage
+      OnClick = ButtonFrameBuyClick
+    end
+    inherited ButtonText: TLabel
+      OnClick = ButtonFrameBuyClick
+    end
   end
-  inline Frame13: TFrame1
+  inline XPFrame: TFrame1
     Left = 167
     Top = 182
     Width = 76
@@ -265,8 +277,14 @@ object StoreForm: TStoreForm
     TabOrder = 2
     ExplicitLeft = 167
     ExplicitTop = 182
+    inherited BackGroundVirtmage: TVirtualImage
+      OnClick = ButtonFrameBuyClick
+    end
+    inherited ButtonText: TLabel
+      OnClick = ButtonFrameBuyClick
+    end
   end
-  inline Frame14: TFrame1
+  inline XPBustFrame: TFrame1
     Left = 401
     Top = 182
     Width = 76
@@ -274,8 +292,14 @@ object StoreForm: TStoreForm
     TabOrder = 3
     ExplicitLeft = 401
     ExplicitTop = 182
+    inherited BackGroundVirtmage: TVirtualImage
+      OnClick = ButtonFrameBuyClick
+    end
+    inherited ButtonText: TLabel
+      OnClick = ButtonFrameBuyClick
+    end
   end
-  inline Frame15: TFrame1
+  inline SecretBoxFrame: TFrame1
     Left = 401
     Top = 323
     Width = 76
@@ -283,8 +307,14 @@ object StoreForm: TStoreForm
     TabOrder = 4
     ExplicitLeft = 401
     ExplicitTop = 323
+    inherited BackGroundVirtmage: TVirtualImage
+      OnClick = ButtonFrameBuyClick
+    end
+    inherited ButtonText: TLabel
+      OnClick = ButtonFrameBuyClick
+    end
   end
-  inline Frame16: TFrame1
+  inline FreeTaskBustFrame: TFrame1
     Left = 284
     Top = 323
     Width = 76
@@ -292,8 +322,14 @@ object StoreForm: TStoreForm
     TabOrder = 5
     ExplicitLeft = 284
     ExplicitTop = 323
+    inherited BackGroundVirtmage: TVirtualImage
+      OnClick = ButtonFrameBuyClick
+    end
+    inherited ButtonText: TLabel
+      OnClick = ButtonFrameBuyClick
+    end
   end
-  inline Frame17: TFrame1
+  inline TothemBustFrame: TFrame1
     Left = 167
     Top = 323
     Width = 76
@@ -301,8 +337,14 @@ object StoreForm: TStoreForm
     TabOrder = 6
     ExplicitLeft = 167
     ExplicitTop = 323
+    inherited BackGroundVirtmage: TVirtualImage
+      OnClick = ButtonFrameBuyClick
+    end
+    inherited ButtonText: TLabel
+      OnClick = ButtonFrameBuyClick
+    end
   end
-  inline Frame18: TFrame1
+  inline CoinsBustFrame: TFrame1
     Left = 50
     Top = 323
     Width = 76
@@ -310,8 +352,14 @@ object StoreForm: TStoreForm
     TabOrder = 7
     ExplicitLeft = 50
     ExplicitTop = 323
+    inherited BackGroundVirtmage: TVirtualImage
+      OnClick = ButtonFrameBuyClick
+    end
+    inherited ButtonText: TLabel
+      OnClick = ButtonFrameBuyClick
+    end
   end
-  object ImageCollection1: TImageCollection
+  object ImageCollection: TImageCollection
     Images = <
       item
         Name = 'OFFBYE'
