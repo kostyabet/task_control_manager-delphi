@@ -41,7 +41,7 @@ Implementation
 {$R *.dfm}
 
 Uses
-    ViewControllerUnit;
+    ViewControllerUnit, NewTaskUnit;
 
 Procedure TChangeDataForm.ApplyButtonFrameClick(Sender: TObject);
 Begin
@@ -61,7 +61,7 @@ End;
 
 Procedure TChangeDataForm.SubTitleLEditChange(Sender: TObject);
 Begin
-    ChangeEditShortText(SubTitleLenLabel, SubTitleLEdit);
+    NewTaskForm.ChangeEditShortText(SubTitleLenLabel, SubTitleLEdit);
 End;
 
 End.

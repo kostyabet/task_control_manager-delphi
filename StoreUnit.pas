@@ -129,6 +129,7 @@ Begin
     CoinsLabel.Caption := IntToStr(User.Coins);
     InputCostInCell(User.GetBustsCost());
     CheckEnabled;
+    TaskListForm.UpDateUserInfo;
 End;
 
 Procedure TStoreForm.InputCostInCell(Costs: TUser.TBustsCost);

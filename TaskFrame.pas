@@ -54,7 +54,8 @@ Uses
     TasksLinkedListUnit,
     TasksListScreenUnit,
     NewTaskUnit,
-    TaskUnit;
+    TaskUnit,
+    UserUnit;
 
 Function TTaskOutputFrame.GetCurentObjectIndex(Sender: TObject): Integer;
 Var
@@ -97,18 +98,30 @@ End;
 
 Procedure TTaskOutputFrame.ApplyButtonClick(Sender: TObject);
 Var
-    ResultKey: Integer;
-    XP, HP, Money, Index: Integer;
+    ResultKey, Index: Integer;
+    CurentTask: TListOfTasks.PTasks;
+    IsFreeTaskExist: Boolean;
 Begin
     ResultKey := Application.Messagebox('Вы уверенны, что хотите завершить задачу?', 'Сохранение',
         MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2);
     If (ResultKey = ID_YES) Then
     Begin
-        User.ApplyNewTask(StrToInt(XPLabel.Caption), StrToInt(HPLabel.Caption), StrToInt(MoneyLabel.Caption));
-        TaskListForm.UpDateUserInfo;
         Index := GetCurentObjectIndex(Sender);
+        CurentTask := TasksList.SearchCurentTask(Index);
+        IsFreeTaskExist := User.FreeTaskUsed;
+        User.ApplyNewTask(User.GetTaskXP(CurentTask.Data), User.GetTaskHP(CurentTask.Data), User.GetTaskMoney(CurentTask.Data));
+        TaskListForm.UpDateUserInfo;
         TasksList.RemoveCurentTask(Index - 1);
         TaskListForm.RemoveCompleteTask(Index);
+        If IsFreeTaskExist And Not User.FreeTaskUsed Then
+            TaskListForm.FreeTaskVImage.Visible := False;
+        TaskListForm.ShowHPBustVImage.Visible := False;
+        TaskListForm.ShowXPBustVImage.Visible := False;
+        TaskListForm.ShowCoinsBustVImage.Visible := False;
+
+        If User.IsTotemUsed Then
+            User.UseBust(TUser.TBusts.Tothem, TaskListForm.TotemFrame.CountLabel);
+        User.IsTotemUsed := False;
     End;
 End;
 

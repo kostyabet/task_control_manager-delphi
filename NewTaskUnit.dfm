@@ -185,6 +185,8 @@ object NewTaskForm: TNewTaskForm
     Time = 0.923285231481713700
     Color = clWindowFrame
     TabOrder = 1
+    Touch.ParentTabletOptions = False
+    Touch.TabletOptions = [toPressAndHold]
   end
   object AboutTaskMemo: TMemo
     Left = 56

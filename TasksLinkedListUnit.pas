@@ -24,7 +24,8 @@ Uses
     Vcl.VirtualImageList,
     TaskUnit,
     TaskFrame,
-    UserUnit;
+    UserUnit,
+    IniFiles;
 
 Type
     TListOfTasks = Class
@@ -38,7 +39,11 @@ Type
             Next: PTasks;
         End;
 
+    Const
+        TasksInfoPath: String = 'tasksinfo';
+
     Var
+        TasksInfoFile: TIniFile;
         FHeadTasks: PTasks;
         FTailTasks: PTasks;
         FTasksCounter: Integer;
@@ -48,16 +53,101 @@ Type
         Function SearchCurentTask(Index: Integer): PTasks;
         Procedure InputInfoInTask(Var ObjectTask: TTaskOutputFrame; Index: Integer);
         Constructor Create;
-        Destructor Destroy;
+        Destructor DestroyTaskList;
         Procedure AddTaskInList(Task: TTask);
         Procedure DrawTasks(Canvas: TCanvas; Left, Top, Width, Height: Integer);
         Procedure RemoveCurentTask(Index: Integer);
+        Procedure SaveTasksInFile;
+        Procedure LoadTasksFromFile;
     End;
 
 Implementation
 
 Uses
     TasksListScreenUnit;
+
+Procedure TListOfTasks.LoadTasksFromFile;
+Var
+    NewTask: TTask;
+    Counter, SubTaskCounter, I, J, Complexity, EndJ, EndI: Integer;
+Begin
+    TasksInfoFile := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
+    Try
+        Try
+            Counter := 0;
+            EndI := TasksInfoFile.ReadInteger('Tasks', 'TasksCounter', 0);
+            For I := 1 To EndI Do
+            Begin
+                NewTask := TTask.Create;
+                Newtask.FTaskData.Title := NewTask.StrToWideCharForTitle(TasksInfoFile.ReadString('Task' + IntToStr(Counter), 'Title', ''));
+                Newtask.FTaskData.Date := TasksInfoFile.ReadDate('Task' + IntToStr(Counter), 'Date', Now);
+                Newtask.FTaskData.About := NewTask.StrToWideCharForAbout(TasksInfoFile.ReadString('Task' + IntToStr(Counter), 'About',
+                    Newtask.FTaskData.About));
+                NewTask.FTaskData.Complexity := NewTask.ComplexityDeterminant(TasksInfoFile.ReadInteger('Task' + IntToStr(Counter),
+                    'Complexity', 0));
+                EndJ := TasksInfoFile.ReadInteger('Task' + IntToStr(Counter), 'SubTasksCounter', 0);
+                SubTaskCounter := 0;
+                For J := 1 To EndJ Do
+                Begin
+                    NewTask.InputNewSubTask(TasksInfoFile.ReadString('SubTask' + IntToStr(Counter) + '.' + IntToStr(SubTaskCounter),
+                        'Title', ''), TasksInfoFile.ReadBool('SubTask' + IntToStr(Counter) + '.' + IntToStr(SubTaskCounter),
+                        'Status', False));
+                    Inc(SubTaskCounter);
+                End;
+                TasksList.AddTaskInList(NewTask);
+                TaskListForm.AddNewBlockInBlocksArr;
+                Inc(Counter);
+            End;
+        Except
+            TaskListForm.ErrorExit('Ошибка при выгрузке данных в файл.');
+        End;
+    Finally
+        TasksInfoFile.Free;
+    End;
+End;
+
+Procedure TListOfTasks.SaveTasksInFile;
+Var
+    CurentTask: PTasks;
+    CurentSubTask: TTask.PSubTasks;
+    Counter, SubTaskCounter: Integer;
+Begin
+    CurentTask := FHeadTasks.Next;
+    DeleteFile(ChangeFileExt(ParamStr(0), '.ini'));
+    TasksInfoFile := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
+    Try
+        Try
+            Counter := 0;
+            TasksInfoFile.EraseSection('');
+            TasksInfoFile.EraseSection('');
+            TasksInfoFile.EraseSection('');
+            TasksInfoFile.WriteInteger('Tasks', 'TasksCounter', FTasksCounter);
+            While (CurentTask <> Nil) Do
+            Begin
+                TasksInfoFile.WriteString('Task' + IntToStr(Counter), 'Title', CurentTask.Data.FTaskData.Title);
+                TasksInfoFile.WriteDate('Task' + IntToStr(Counter), 'Date', CurentTask.Data.FTaskData.Date);
+                TasksInfoFile.WriteString('Task' + IntToStr(Counter), 'About', CurentTask.Data.FTaskData.About);
+                TasksInfoFile.WriteInteger('Task' + IntToStr(Counter), 'Complexity', Ord(CurentTask.Data.FTaskData.Complexity));
+                TasksInfoFile.WriteInteger('Task' + IntToStr(Counter), 'SubTasksCounter', Ord(CurentTask.Data.FSubTasksCounter));
+                CurentSubTask := CurentTask.Data.FHeadSubTask.Next;
+                SubTaskCounter := 0;
+                While CurentSubTask <> Nil Do
+                Begin
+                    TasksInfoFile.WriteString('SubTask' + IntToStr(Counter) + '.' + IntToStr(SubTaskCounter), 'Title', CurentSubTask.Title);
+                    TasksInfoFile.WriteBool('SubTask' + IntToStr(Counter) + '.' + IntToStr(SubTaskCounter), 'Status', CurentSubTask.Status);
+                    CurentSubTask := CurentSubTask.Next;
+                    Inc(SubTaskCounter);
+                End;
+                CurentTask := CurentTask.Next;
+                Inc(Counter);
+            End;
+        Except
+            TaskListForm.ErrorExit('Ошибка при выгрузке данных в файл.');
+        End;
+    Finally
+        TasksInfoFile.Free;
+    End;
+End;
 
 Procedure TListOfTasks.RemoveCurentTask(Index: Integer);
 Var
@@ -70,7 +160,7 @@ Begin
             CurentTask.Next.Prev := FHeadTasks;
         FHeadTasks.Next := CurentTask.Next;
     End;
-    
+
     If CurentTask = FTailTasks Then
     Begin
         FTailTasks := CurentTask.Prev;
@@ -126,7 +216,6 @@ End;
 Procedure TListOfTasks.InputInfoInTask(Var ObjectTask: TTaskOutputFrame; Index: Integer);
 Var
     CurentTask: PTasks;
-    Complexity: TComplexity;
 Begin
     CurentTask := SearchCurentTask(Index);
     ObjectTask.ComplexityVImage.ImageIndex := GetComplexityItemValue(CurentTask);
@@ -135,10 +224,9 @@ Begin
     ObjectTask.AboutLabel.Caption := CurentTask.Data.GetAbout(CurentTask.Data);
     ObjectTask.SubTasksResLabel.Caption := CurentTask.Data.GetSubTasksInfo(CurentTask.Data);
 
-    Complexity := CurentTask.Data.GetComplexity(CurentTask.Data);
-    ObjectTask.XPLabel.Caption := IntToStr(User.GetTaskXP(Complexity));
-    ObjectTask.HpLabel.Caption := IntToStr(User.GetTaskHP(Complexity));
-    ObjectTask.MoneyLabel.Caption := IntToStr(User.GetTaskMoney(Complexity));
+    ObjectTask.XPLabel.Caption := IntToStr(User.GetTaskXP(CurentTask.Data));
+    ObjectTask.HpLabel.Caption := IntToStr(User.GetTaskHP(CurentTask.Data));
+    ObjectTask.MoneyLabel.Caption := IntToStr(User.GetTaskMoney(CurentTask.Data));
 
     ObjectTask.Left := 10;
     ObjectTask.Top := 8 + Index * (8 + ObjectTask.Height);
@@ -181,12 +269,15 @@ Begin
     Inc(FTasksCounter);
 End;
 
-Destructor TListOfTasks.Destroy;
+Destructor TListOfTasks.DestroyTaskList;
 Begin
-    Dispose(FHeadTasks);
-    FHeadTasks := Nil;
-    Dispose(FTailTasks);
-    FTailTasks := Nil;
+    FTailTasks := FHeadTasks;
+    While (FHeadTasks <> Nil) Do
+    Begin
+        FTailTasks := FTailTasks.Next;
+        Dispose(FHeadTasks);
+        FHeadTasks := FTailTasks;
+    End;
 End;
 
 End.

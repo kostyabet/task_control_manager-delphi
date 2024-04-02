@@ -2,11 +2,21 @@
 
 Interface
 
-//из файла нам нужен:
+{ .ini настойки приложения } //?????????.ini
+//- музыка
+//- тема
+//- локализация
+
+{ персональная информация } //userinfo.txt
 //- текущий уровень;
-//- кол-во опыта;
 //- кол-во здоровья;
+//- кол-во опыта;
 //- кол-во монет.
+//- массив с кол-вом бонусов
+//- информация о применённых бонусах
+
+{ хранение задач } //tasks.txt
+//- хранить все задачи
 
 Uses
     Winapi.Windows,
@@ -65,10 +75,32 @@ Type
         FreeTaskBust: Integer = 80;
         SecretBox: Integer = 70;
 
+        HPBonus: Integer = 15;
+        XPBonus: Integer = 20;
+        CoinsBonus: Integer = 5;
+
     Type
         TBusts = (HP, XP, HPBust, XPBust, CoinsBust, Tothem, FreeTask, SecretBox);
         TBustsCost = Array [Low(TBusts) .. High(TBusts)] Of Integer;
-        TBustBought = Array [Low(TBusts) .. TBusts.FreeTask] Of Integer;
+        TBustBought = Array [Low(TBusts) .. High(TBusts)] Of Integer;
+
+        TUserInfo = Record
+            Lvl: Integer;
+            XP: Integer;
+            HP: Integer;
+            Coins: Integer;
+            BustBought: TBustBought;
+            XPBust: Integer;
+            HPBust: Integer;
+            CoinsBust: Integer;
+            FreeTaskUsed: Boolean;
+            BustsBuyCount: Integer;
+        End;
+
+        TUserFile = File Of TUserInfo;
+
+    Const
+        UserinfoPath: String = 'userinfo.txt';
 
     Var
         FCurentLvl: Integer;
@@ -80,21 +112,38 @@ Type
         FBustsCost: TBustsCost;
         FBustsBuyCount: Integer;
         FBustBought: TBustBought;
+        FXPBust: Integer;
+        FHPBust: Integer;
+        FCoinsBust: Integer;
+        FFreeTaskUsed: Boolean;
+        FIsTotemUsed: Boolean;
+        UserInfoFile: TUserFile;
     Private
-        Function CalculateAwards(Complexity: TComplexity; EasyVal, MediumVal, HardVal: Integer): Integer;
-
+        Function CalculateAwards(Task: TTask; EasyVal, MediumVal, HardVal: Integer): Integer;
         Function FindCost(StartVal: Integer): Integer;
+        Function SearchCurentValOnLvl(Start: Integer; Increase: Double): Integer;
+        Function GetUserInfo(): TUserInfo;
+        Procedure InputDataInField(UserInfo: TUserInfo);
+        Procedure UseHp;
+        Procedure UseXP;
+        Procedure UseHPBust;
+        Procedure UseXPBust;
+        Procedure UseCoinsBust;
+        Procedure UseFreeTask;
     Public
-        Function GetTaskMoney(Complexity: TComplexity): Integer;
-        Function GetTaskXP(Complexity: TComplexity): Integer;
-        Function GetTaskHP(Complexity: TComplexity): Integer;
+        Function GetTaskMoney(Task: TTask): Integer;
+        Function GetTaskXP(Task: TTask): Integer;
+        Function GetTaskHP(Task: TTask): Integer;
 
         Function GetHpPersent(): TPercent;
         Function GetXpPersent(): TPercent;
         Function GetBustsCost(): TBustsCost;
+        Procedure UseBust(TypeOfBust: TBusts; CountLabel: TLabel);
 
         Procedure ApplyNewTask(XP_Val, HP_Val, Coins_Val: Integer);
         Procedure BuyBust(TypeOfBust: TBusts; CountLabel: TLabel);
+        Procedure SaveUserDataInFile;
+        Procedure LoadUserDataFromFile;
 
         Function IsCanBuy(ItemCost: Integer): Boolean;
 
@@ -104,41 +153,176 @@ Type
         Property XP: Integer Read FXP;
         Property MaxHP: Integer Read FNextLvlHP;
         Property MaxXP: Integer Read FNextLvlXP;
-        Property BustBought: TBustBought Read FBustBought;
+        Property BustBought: TBustBought Read FBustBought Write FBustBought;
+        Property FreeTaskUsed: Boolean Read FFreeTaskUsed Write FFreeTaskUsed;
+        Property IsTotemUsed: Boolean Read FIsTotemUsed Write FIsTotemUsed;
         Constructor Create;
     End;
 
 Implementation
 
 Uses
-    TasksListScreenUnit;
+    TasksListScreenUnit,
+    SecretBoxUnit;
+
+Procedure TUser.UseHp();
+Begin
+    FHP := FHP + HPBonus;
+    If FHP > FNextLvlHP Then
+        FHP := FNextLvlHP;
+End;
+
+Procedure TUser.UseXP();
+Begin
+    FXP := FXP + XPBonus;
+
+    If (FXP > FNextLvlXP) Then
+    Begin
+        FXP := FXP Mod FNextLvlXP;
+        FNextLvlXP := Trunc(XPIncrease * FNextLvlXP);
+        FNextLvlHP := Trunc(HPIncrease * FNextLvlHP);
+        Inc(FCurentLvl);
+    End;
+End;
+
+Procedure TUser.UseHPBust;
+Var
+    I: Integer;
+    Coef: Real;
+Begin
+    Coef := 1;
+    For I := 1 To FCurentLvl Do
+        Coef := Coef + Coef * AwardIncrease;
+
+    FHPBust := FHPBust + Trunc(HPBonus * Coef);
+End;
+
+Procedure TUser.UseXPBust;
+Var
+    I: Integer;
+    Coef: Real;
+Begin
+    Coef := 1;
+    For I := 1 To FCurentLvl Do
+        Coef := Coef + Coef * AwardIncrease;
+
+    FXPBust := FXPBust + Trunc(XPBonus * Coef);
+End;
+
+Procedure TUser.UseCoinsBust;
+Var
+    I: Integer;
+    Coef: Real;
+Begin
+    Coef := 1;
+    For I := 1 To FCurentLvl Do
+        Coef := Coef + Coef * AwardIncrease;
+
+    FCoinsBust := FCoinsBust + Trunc(CoinsBonus * Coef);
+End;
+
+Procedure TUser.UseFreeTask();
+Begin
+    FFreeTaskUsed := True;
+End;
+
+Procedure TUser.UseBust(TypeOfBust: TBusts; CountLabel: TLabel);
+Begin
+    Case TypeOfBust Of
+        TBusts.HP:
+            Begin
+                UseHp;
+                TaskListForm.UpDateUserInfo;
+            End;
+        TBusts.XP:
+            Begin
+                UseXP;
+                TaskListForm.UpDateUserInfo;
+            End;
+        TBusts.HPBust:
+            Begin
+                UseHPBust;
+                TaskListForm.ShowHPBustVImage.Visible := True;
+                TaskListForm.ShowHPBustVImage.Hint := '+' + IntToStr(FHPBust) +
+                    ' к здоровью: бонус примениться при завершении любой задачи.';
+            End;
+        TBusts.XPBust:
+            Begin
+                UseXPBust;
+                TaskListForm.ShowXPBustVImage.Visible := True;
+                TaskListForm.ShowXPBustVImage.Hint := '+' + IntToStr(FXPBust) + ' к опыту: бонус примениться при завершении любой задачи.';
+            End;
+        TBusts.CoinsBust:
+            Begin
+                UseCoinsBust;
+                TaskListForm.ShowCoinsBustVImage.Visible := True;
+                TaskListForm.ShowCoinsBustVImage.Hint := '+' + IntToStr(FCoinsBust) +
+                    ' к монетам: бонус примениться при завершении любой задачи.';
+            End;
+        TBusts.Tothem:
+            Begin
+
+            End;
+        TBusts.FreeTask:
+            Begin
+                UseFreeTask;
+                TaskListForm.FreeTaskVImage.Visible := True;
+                TaskListForm.FreeTaskVImage.Hint := '0, 0, 0: Автоматически примениться при просрочке задачи.';
+            End;
+    Else
+        Begin
+            Application.CreateForm(TSecreteBoxForm, SecreteBoxForm);
+            SecreteBoxForm.ShowModal;
+            Inc(FBustBought[TypeOfBust]);
+        End;
+    End;
+    Dec(FBustBought[TypeOfBust]);
+    TaskListForm.ChangeBustsCounter(CountLabel, TypeOfBust);
+End;
 
 Function TUser.IsCanBuy(ItemCost: Integer): Boolean;
 Begin
     IsCanBuy := FCoins >= ItemCost;
 End;
 
-Constructor TUser.Create;
+Function TUser.SearchCurentValOnLvl(Start: Integer; Increase: Double): Integer;
+Var
+    I: Integer;
+    Val: Double;
 Begin
-    FXP := 0;
-    FNextLvlXP := StartXP;
-    FHP := StartHP;
-    FNextLvlHP := StartHP;
-    FCoins := 0;
+    Val := Start;
+    For I := 2 To FCurentLvl Do
+        Val := Val * Increase;
+
+    SearchCurentValOnLvl := Trunc(Val);
+End;
+
+Constructor TUser.Create;
+Var
+    I: TBusts;
+Begin
     FCurentLvl := 1;
+    FNextLvlXP := SearchCurentValOnLvl(StartXP, XPIncrease);
+    FXP := 0;
+    FNextLvlHP := SearchCurentValOnLvl(StartHP, HPIncrease);
+    FHP := FNextLvlHP;
+    FCoins := 0;
     FBustsBuyCount := 0;
+    FXPBust := 0;
+    FHPBust := 0;
+    FCoinsBust := 0;
+    FFreeTaskUsed := False;
+    FIsTotemUsed := False;
+    For I := Low(TUser.TBusts) To High(TUser.TBusts) Do
+        FBustBought[I] := 0;
 End;
 
 Procedure TUser.BuyBust(TypeOfBust: TBusts; CountLabel: TLabel);
-Var
-    LeftBorder: Integer;
 Begin
     Inc(FBustBought[TypeOfBust]);
     FCoins := FCoins - FBustsCost[TypeOfBust];
     Inc(FBustsBuyCount);
-    LeftBorder := CountLabel.Left + CountLabel.Width;
-    CountLabel.Caption := 'x' + IntToStr(FBustBought[TypeOfBust]);
-    CountLabel.Left := LeftBorder - CountLabel.Width;
+    TaskListForm.ChangeBustsCounter(CountLabel, TypeOfBust);
 End;
 
 Function TUser.FindCost(StartVal: Integer): Integer;
@@ -166,38 +350,44 @@ Begin
     GetBustsCost := FBustsCost;
 End;
 
-Function TUser.CalculateAwards(Complexity: TComplexity; EasyVal, MediumVal, HardVal: Integer): Integer;
+Function TUser.CalculateAwards(Task: TTask; EasyVal, MediumVal, HardVal: Integer): Integer;
 Var
     I: Integer;
-    Coef: Real;
+    Coef, ResVal: Real;
+    CurentDate: TDate;
 Begin
     Coef := 1;
     For I := 1 To FCurentLvl Do
         Coef := Coef + Coef * AwardIncrease;
 
-    Case Complexity Of
+    Case Task.FTaskData.Complexity Of
         Easy:
-            CalculateAwards := Trunc(EasyVal * Coef);
+            ResVal := EasyVal * Coef;
         Medium:
-            CalculateAwards := Trunc(MediumVal * Coef);
+            ResVal := MediumVal * Coef;
     Else
-        CalculateAwards := Trunc(HardVal * Coef);
+        ResVal := HardVal * Coef;
     End;
+    CurentDate := Date + EncodeTime(0, 0, 0, 0);
+    If (Task.FTaskData.Date < CurentDate) Then
+        ResVal := -1 * (ResVal / 2);
+
+    CalculateAwards := Trunc(ResVal);
 End;
 
-Function TUser.GetTaskMoney(Complexity: TComplexity): Integer;
+Function TUser.GetTaskMoney(Task: TTask): Integer;
 Begin
-    GetTaskMoney := CalculateAwards(Complexity, EazyTaskMoney, MediumTaskMoney, HardTaskMoney);
+    GetTaskMoney := CalculateAwards(Task, EazyTaskMoney, MediumTaskMoney, HardTaskMoney);
 End;
 
-Function TUser.GetTaskXP(Complexity: TComplexity): Integer;
+Function TUser.GetTaskXP(Task: TTask): Integer;
 Begin
-    GetTaskXP := CalculateAwards(Complexity, EazyTaskXP, MediumTaskXP, HardTaskXP);
+    GetTaskXP := CalculateAwards(Task, EazyTaskXP, MediumTaskXP, HardTaskXP);
 End;
 
-Function TUser.GetTaskHP(Complexity: TComplexity): Integer;
+Function TUser.GetTaskHP(Task: TTask): Integer;
 Begin
-    GetTaskHP := CalculateAwards(Complexity, EazyTaskHP, MediumTaskHP, HardTaskHP);
+    GetTaskHP := CalculateAwards(Task, EazyTaskHP, MediumTaskHP, HardTaskHP);
 End;
 
 Function TUser.GetHpPersent: TPercent;
@@ -214,22 +404,174 @@ Procedure TUser.ApplyNewTask(XP_Val, HP_Val, Coins_Val: Integer);
 Var
     TempHp, TempXp: Integer;
 Begin
-    FCoins := FCoins + Coins_Val;
-
-    TempXP := (FXP + XP_Val);
-    If (TempXP > FNextLvlXP) Then
+    TempXP := FXP;
+    TempHP := FHP;
+    If Not(FFreeTaskUsed And (Coins_Val < 0) And (XP_Val < 0) And (HP_Val < 0)) Then
     Begin
-        FXP := TempXp Mod FNextLvlXP;
+        FCoins := FCoins + Coins_Val + FCoinsBust;
+        TempXP := FXP + XP_Val + FXPBust;
+        TempHp := FHP + HP_Val + FHPBust;
+    End
+    Else
+        FFreeTaskUsed := False;
+
+    If (FBustBought[TBusts.Tothem] <> 0) And (Coins_Val < 0) And (XP_Val < 0) And (HP_Val < 0) Then
+    Begin
+        FCoins := FCoins + Coins_Val * (-1) + FCoinsBust;
+        TempXP := FXP + XP_Val * (-1) + FXPBust;
+        TempHp := FHP + HP_Val * (-1) + FHPBust;
+        FIsTotemUsed := True;
+    End;
+
+    If FCoins < 0 Then
+        FCoins := 0;
+
+    While (TempXP > FNextLvlXP) Do
+    Begin
+        TempXp := TempXp - FNextLvlXP;
         FNextLvlXP := Trunc(XPIncrease * FNextLvlXP);
         FNextLvlHP := Trunc(HPIncrease * FNextLvlHP);
         Inc(FCurentLvl);
-    End
-    Else
-        FXP := TempXp;
+    End;
+    If (TempXP < 0) Then
+        TempXP := 0;
+    FXP := TempXp;
 
-    TempHp := FHP + HP_Val;
     If (TempHP > FNextLvlHP) Then
-        FHP := FNextLvlHP;
+        FHP := FNextLvlHP
+    Else
+        If (TempHp < 0) Then
+        Begin
+            FNextLvlXP := Trunc(FNextLvlXP / XPIncrease);
+            FXP := (FNextLvlXP * 2) Div 3;
+            FNextLvlHP := Trunc(FNextLvlHP / HPIncrease);
+            FHP := (FNextLvlHp * 2) Div 3;
+            Dec(FCurentLvl);
+        End
+        Else
+            FHP := TempHp;
+
+    FHPBust := 0;
+    FXPBust := 0;
+    FCoinsBust := 0;
+End;
+
+Procedure TUser.InputDataInField(UserInfo: TUserInfo);
+Type
+    TArrOfLabel = Array [0 .. 7] Of TLabel;
+Var
+    BustsLabels: TArrOfLabel;
+    I: TUser.TBusts;
+    J: Integer;
+Begin
+    BustsLabels[0] := TaskListForm.HPFrame.CountLabel;
+    BustsLabels[1] := TaskListForm.XPFrame.CountLabel;
+    BustsLabels[2] := TaskListForm.HPBustFrame.CountLabel;
+    BustsLabels[3] := TaskListForm.XPBustFrame.CountLabel;
+    BustsLabels[4] := TaskListForm.CoinsFrame.CountLabel;
+    BustsLabels[5] := TaskListForm.TotemFrame.CountLabel;
+    BustsLabels[6] := TaskListForm.FreeTaskFrame.CountLabel;
+    BustsLabels[7] := TaskListForm.SecretboxFrame.CountLabel;
+
+    FCurentLvl := UserInfo.Lvl;
+    FXP := UserInfo.XP;
+    FHP := UserInfo.HP;
+    FCoins := UserInfo.Coins;
+    FBustBought := UserInfo.BustBought;
+    ApplyNewTask(UserInfo.XPBust, UserInfo.HPBust, UserInfo.CoinsBust);
+    FFreeTaskUsed := UserInfo.FreeTaskUsed;
+    FBustsBuyCount := UserInfo.BustsBuyCount;
+
+    If (FFreeTaskUsed) Then
+    Begin
+        TaskListForm.FreeTaskVImage.Visible := True;
+        TaskListForm.FreeTaskVImage.Hint := '0, 0, 0: Автоматически примениться при просрочке задачи.';
+    End;
+
+    If (FCoinsBust <> 0) Then
+    Begin
+        TaskListForm.ShowCoinsBustVImage.Visible := True;
+        TaskListForm.ShowCoinsBustVImage.Hint := '+' + IntToStr(FCoinsBust) + ' к монетам: бонус примениться при завершении любой задачи.';
+    End;
+
+    If (FHPBust <> 0) Then
+    Begin
+        TaskListForm.ShowHPBustVImage.Visible := True;
+        TaskListForm.ShowHPBustVImage.Hint := '+' + IntToStr(FHPBust) + ' к здоровью: бонус примениться при завершении любой задачи.';
+    End;
+
+    If (FXPBust <> 0) Then
+    Begin
+        TaskListForm.ShowXPBustVImage.Visible := True;
+        TaskListForm.ShowXPBustVImage.Hint := '+' + IntToStr(FXPBust) + ' к опыту: бонус примениться при завершении любой задачи.';
+    End;
+
+    For I := Low(TUser.TBusts) To High(TUser.TBusts) Do
+        For J := 1 To FBustBought[I] Do
+        Begin
+            FBustBought[I] := FBustBought[I] - 1;
+            User.BuyBust(I, BustsLabels[Ord(I)]);
+        End;
+End;
+
+Function TUser.GetUserInfo(): TUserInfo;
+Var
+    UserInfo: TUserInfo;
+Begin
+    UserInfo.Lvl := FCurentLvl;
+    UserInfo.XP := FXP;
+    UserInfo.HP := FHP;
+    UserInfo.Coins := FCoins;
+    UserInfo.BustBought := FBustBought;
+    UserInfo.XPBust := FXPBust;
+    UserInfo.HPBust := FHPBust;
+    UserInfo.CoinsBust := FCoinsBust;
+    UserInfo.FreeTaskUsed := FFreeTaskUsed;
+    UserInfo.BustsBuyCount := FBustsBuyCount;
+
+    GetUserInfo := UserInfo;
+End;
+
+Procedure TUser.LoadUserDataFromFile;
+Var
+    UserInfo: TUserInfo;
+Begin
+    Assign(UserInfoFile, UserinfoPath);
+    If Not FileExists(UserinfoPath) Then
+        Rewrite(UserInfoFile)
+    Else
+    Begin
+        Try
+            Reset(UserInfoFile);
+            Try
+                Read(UserInfoFile, UserInfo);
+                InputDataInField(UserInfo);
+            Except
+                TaskListForm.ErrorExit('Ошибка при загрузке данных из файла.');
+                Rewrite(UserInfoFile);
+            End;
+        Finally
+            Close(UserInfoFile);
+        End;
+    End;
+End;
+
+Procedure TUser.SaveUserDataInFile;
+Var
+    UserInfo: TUserInfo;
+Begin
+    UserInfo := GetUserInfo;
+    Assign(UserInfoFile, UserinfoPath);
+    Try
+        Rewrite(UserInfoFile);
+        Try
+            Write(UserInfoFile, UserInfo);
+        Except
+            TaskListForm.ErrorExit('Ошибка при выгрузке данных в файл.');
+        End;
+    Finally
+        Close(UserInfoFile);
+    End;
 End;
 
 End.

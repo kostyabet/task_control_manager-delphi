@@ -27,7 +27,8 @@ Uses
     TaskFrame,
     TaskUnit,
     UserUnit,
-    BustOutputFrame;
+    BustOutputFrame,
+    IniFiles;
 
 Type
     TTaskListForm = Class(TForm)
@@ -39,7 +40,6 @@ Type
         CoinsLabel: TLabel;
         Label2: TLabel;
         LvlLabel: TLabel;
-        Label4: TLabel;
         XPLabel: TLabel;
         HPLabel: TLabel;
         XPBox: TPaintBox;
@@ -52,13 +52,21 @@ Type
         TasksListSclBox: TScrollBox;
         ImageCollection: TImageCollection;
         HPFrame: TBustFrame;
-    CoinsFrame: TBustFrame;
+        CoinsFrame: TBustFrame;
         XPFrame: TBustFrame;
         TotemFrame: TBustFrame;
         HPBustFrame: TBustFrame;
         FreeTaskFrame: TBustFrame;
         XPBustFrame: TBustFrame;
         SecretBoxFrame: TBustFrame;
+        XPicoVImage: TVirtualImage;
+        HPicoVImage: TVirtualImage;
+        ShowHPBustVImage: TVirtualImage;
+        ShowXPBustVImage: TVirtualImage;
+        ShowCoinsBustVImage: TVirtualImage;
+    FreeTaskVImage: TVirtualImage;
+        UsedBonusPanel: TPanel;
+        CheckTaskTimer: TTimer;
         Procedure FormCreate(Sender: TObject);
         Procedure PaintBox2Paint(Sender: TObject);
         Procedure TasksListPaintBoxPaint(Sender: TObject);
@@ -77,10 +85,16 @@ Type
         Procedure TasksListSclBoxMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
             Var Handled: Boolean);
         Procedure UpDateUserInfo();
+        Function UseBustIndex(Sender: TObject): TUser.TBusts;
+        Procedure FormDestroy(Sender: TObject);
+        Procedure CheckTaskTime(Sender: TObject);
     Private
-        { Private declarations }
+
     Public
+        Procedure ErrorExit(ErrorStr: String);
         Procedure RemoveCompleteTask(Index: Integer);
+        Procedure ChangeBustsCounter(CountLabel: TLabel; TypeOfBust: TUser.TBusts);
+        Function GetBustLabel(TypeOfBust: TUser.TBusts): TLabel;
     End;
 
 Type
@@ -105,6 +119,56 @@ Uses
     InstractionUnit,
     ProfileUnit;
 
+Procedure TTaskListForm.ChangeBustsCounter(CountLabel: TLabel; TypeOfBust: TUser.TBusts);
+Var
+    LeftBorder: Integer;
+Begin
+    LeftBorder := CountLabel.Left + CountLabel.Width;
+    CountLabel.Caption := 'x' + IntToStr(User.FBustBought[TypeOfBust]);
+    CountLabel.Left := LeftBorder - CountLabel.Width;
+End;
+
+Procedure TTaskListForm.CheckTaskTime(Sender: TObject);
+Var
+    CurentTask: TListOfTasks.PTasks;
+    I: Integer;
+    CurentDate: TDate;
+Begin
+    For I := Low(FArrayOfBlocks) To High(FArrayOfBlocks) Do
+    Begin
+        CurentTask := TasksList.SearchCurentTask(I);
+        CurentDate := Date + EncodeTime(0, 0, 0, 0);
+        If (CurentTask.Data.FTaskData.Date < CurentDate) Then
+        Begin
+            FArrayOfBlocks[I].XPLabel.Caption := IntToStr(StrToInt(FArrayOfBlocks[I].XPLabel.Caption));
+            FArrayOfBlocks[I].HpLabel.Caption := IntToStr(StrToInt(FArrayOfBlocks[I].HPLabel.Caption));
+            FArrayOfBlocks[I].MoneyLabel.Caption := IntToStr(StrToInt(FArrayOfBlocks[I].MoneyLabel.Caption));
+        End;
+    End;
+End;
+
+Function TTaskListForm.GetBustLabel(TypeOfBust: TUser.TBusts): TLabel;
+Begin
+    Case TypeOfBust Of
+        TUser.TBusts.HP:
+            GetBustLabel := HPFrame.CountLabel;
+        TUser.TBusts.XP:
+            GetBustLabel := XPFrame.CountLabel;
+        TUser.TBusts.HPBust:
+            GetBustLabel := HPBustFrame.CountLabel;
+        TUser.TBusts.XPBust:
+            GetBustLabel := XPBustFrame.CountLabel;
+        TUser.TBusts.CoinsBust:
+            GetBustLabel := CoinsFrame.CountLabel;
+        TUser.TBusts.Tothem:
+            GetBustLabel := TotemFrame.CountLabel;
+        TUser.TBusts.FreeTask:
+            GetBustLabel := FreeTaskFrame.CountLabel;
+    Else
+        GetBustLabel := SecretBoxFrame.CountLabel;
+    End;
+End;
+
 Procedure TTaskListForm.RemoveCompleteTask(Index: Integer);
 Var
     TempArr: TArrayOfBlocks;
@@ -124,12 +188,16 @@ Begin
 End;
 
 Procedure TTaskListForm.UpDateUserInfo();
+Var
+    LeftBorder: Integer;
 Begin
     XPBoxPaint(TaskListForm.XPBox);
     XPBox.Hint := IntToStr(User.XP) + '/' + IntToStr(User.MaxXP);
     HPPBoxPaint(TaskListForm.HPPBox);
     HPPBox.Hint := IntToStr(User.HP) + '/' + IntToStr(User.MaxHP);
+    LeftBorder := LvlLabel.Left + LvlLabel.Width;
     LvlLabel.Caption := IntToStr(User.CurentLvl);
+    LvlLabel.Left := LeftBorder - LvlLabel.Width;
     CoinsLabel.Caption := IntToStr(User.Coins);
 End;
 
@@ -140,7 +208,7 @@ Var
 Begin
     Position := TasksListSclBox.VertScrollBar.Position;
     TasksListSclBox.VertScrollBar.Position := 0;
-    SetLength(TempArrOfBlocks, TasksList.FTasksCounter);
+    SetLength(TempArrOfBlocks, Length(FArrayOfBlocks) + 1);
     For I := Low(FArrayOfBlocks) To High(FArrayOfBlocks) Do
         TempArrOfBlocks[I] := FArrayOfBlocks[I];
     TempArrOfBlocks[High(TempArrOfBlocks)] := TTaskOutputFrame.Create(TasksListPaintBox);
@@ -152,12 +220,55 @@ Begin
     TasksListSclBox.VertScrollBar.Position := Position;
 End;
 
+Function TTaskListForm.UseBustIndex(Sender: TObject): TUser.TBusts;
+Begin
+    If (Sender = HPFrame.BackGroundVImage) Or (Sender = HPFrame.CountLabel) Or (Sender = HPFrame.BustVImage) Then
+        UseBustIndex := TUser.TBusts.HP;
+
+    If (Sender = XPFrame.BackGroundVImage) Or (Sender = XPFrame.CountLabel) Or (Sender = XPFrame.BustVImage) Then
+        UseBustIndex := TUser.TBusts.XP;
+
+    If (Sender = HPBustFrame.BackGroundVImage) Or (Sender = HPBustFrame.CountLabel) Or (Sender = HPBustFrame.BustVImage) Then
+        UseBustIndex := TUser.TBusts.HPBust;
+
+    If (Sender = XPBustFrame.BackGroundVImage) Or (Sender = XPBustFrame.CountLabel) Or (Sender = XPBustFrame.BustVImage) Then
+        UseBustIndex := TUser.TBusts.XPBust;
+
+    If (Sender = CoinsFrame.BackGroundVImage) Or (Sender = CoinsFrame.CountLabel) Or (Sender = CoinsFrame.BustVImage) Then
+        UseBustIndex := TUser.TBusts.CoinsBust;
+
+    If (Sender = TotemFrame.BackGroundVImage) Or (Sender = TotemFrame.CountLabel) Or (Sender = TotemFrame.BustVImage) Then
+        UseBustIndex := TUser.TBusts.Tothem;
+
+    If (Sender = FreeTaskFrame.BackGroundVImage) Or (Sender = FreeTaskFrame.CountLabel) Or (Sender = FreeTaskFrame.BustVImage) Then
+        UseBustIndex := TUser.TBusts.FreeTask;
+
+    If (Sender = SecretBoxFrame.BackGroundVImage) Or (Sender = SecretBoxFrame.CountLabel) Or (Sender = SecretBoxFrame.BustVImage) Then
+        UseBustIndex := TUser.TBusts.SecretBox;
+End;
+
+Procedure TTaskListForm.ErrorExit(ErrorStr: String);
+Begin
+    Application.Messagebox(PWideChar(ErrorStr), 'Сохранение', MB_OK + MB_ICONERROR + MB_DEFBUTTON2);
+End;
+
 Procedure TTaskListForm.FormCreate(Sender: TObject);
 Begin
-    TasksList := TListOfTasks.Create;
     User := TUser.Create;
+    User.LoadUserDataFromFile;
+    TasksList := TListOfTasks.Create;
+    TasksList.LoadTasksFromFile();
     UpDateUserInfo;
+    TaskListForm.UpDateUserInfo;
     TaskListForm.Color := RGB(202, 205, 221);
+End;
+
+Procedure TTaskListForm.FormDestroy(Sender: TObject);
+Begin
+    User.SaveUserDataInFile;
+    TasksList.SaveTasksInFile;
+    User.Destroy;
+    TasksList.DestroyTaskList;
 End;
 
 Procedure TTaskListForm.StoreButtonFrameClick(Sender: TObject);

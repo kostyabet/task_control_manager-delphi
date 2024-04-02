@@ -55,9 +55,10 @@ Type
         Procedure SubTasksListFrameClick(Sender: TObject);
         Procedure ApplyFrameClick(Sender: TObject);
     Private
-        { Private declarations }
+        Function CheckData(TitleLEditText, AboutTaskMemoText: String): Boolean;
     Public
-        { Public declarations }
+        Procedure ChangeEditShortText(Var Title: TLabel; LabeledEdit: TLabeledEdit); Overload;
+        Procedure ChangeEditShortText(Var Title: TLabel; Memo: TMemo); Overload;
     End;
 
 Var
@@ -73,6 +74,33 @@ Uses
     TasksListScreenUnit,
     ViewSubTasksUnit;
 
+Procedure TNewTaskForm.ChangeEditShortText(Var Title: TLabel; LabeledEdit: TLabeledEdit);
+Begin
+    Title.Caption := IntToStr(Length(LabeledEdit.Text)) + '/' + IntToStr(LabeledEdit.MaxLength);
+    Title.Left := LabeledEdit.Width + LabeledEdit.Left - Title.Width;
+    Title.Top := LabeledEdit.Top - Title.Height - 1;
+    If (Length(LabeledEdit.Text) = LabeledEdit.MaxLength) Then
+        Title.Font.Color := RGB(186, 55, 71)
+    Else
+        Title.Font.Color := RGB(38, 43, 50);
+End;
+
+Procedure TNewTaskForm.ChangeEditShortText(Var Title: TLabel; Memo: TMemo);
+Begin
+    Title.Caption := IntToStr(Length(Memo.Text)) + '/' + IntToStr(Memo.MaxLength);
+    Title.Left := Memo.Width + Memo.Left - Title.Width;
+    Title.Top := Memo.Top - Title.Height - 1;
+    If (Length(Memo.Text) = Memo.MaxLength) Then
+        Title.Font.Color := RGB(186, 55, 71)
+    Else
+        Title.Font.Color := RGB(38, 43, 50);
+End;
+
+Function TNewTaskForm.CheckData(TitleLEditText, AboutTaskMemoText: String): Boolean;
+Begin
+    CheckData := (Trim(TitleLEditText) <> '') And (Trim(AboutTaskMemoText) <> '');
+End;
+
 Procedure TNewTaskForm.AboutTaskMemoChange(Sender: TObject);
 Begin
     ChangeEditShortText(AboutTaskLenLabel, AboutTaskMemo);
@@ -84,6 +112,7 @@ End;
 Procedure TNewTaskForm.FormCreate(Sender: TObject);
 Begin
     DateTPicker.Date := Now;
+    //DateTPicker.MinDate := Now;
     SubTitleLEditChange(SubTitleLEdit);
 
     DateTPicker.Color := Rgb(202, 205, 221);
@@ -119,7 +148,7 @@ End;
 
 Procedure TNewTaskForm.AddSubTaskFrameClick(Sender: TObject);
 Begin
-    NewTask.InputNewSubTask(SubTitleLEdit.Text);
+    NewTask.InputNewSubTask(SubTitleLEdit.Text, False);
     SubTitleLEdit.Text := '';
 End;
 

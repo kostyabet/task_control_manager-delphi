@@ -31,25 +31,29 @@ Type
     TFramesArray = Array Of Array Of TFrame1;
     TNumbersArray = Array Of TLabel;
     TComplexity = (Easy, Medium, Hard);
+    TTitleString = Array [1 .. 20] Of WideChar;
+    TAboutString = Array [1 .. 200] Of WideChar;
 
     TTask = Class
     Type
         PSubTasks = ^TSubTasks;
 
         TSubTasks = Record
-            Title: String;
+            Title: TTitleString;
             Status: Boolean;
             Next: PSubTasks;
         End;
 
         TTaskData = Record
-            Title: String;
+            Title: TTitleString;
             Date: TDate;
-            About: String;
+            About: TAboutString;
             SubTasks: PSubTasks;
             Complexity: TComplexity;
-            Status: Boolean;
         End;
+
+    Const
+        NULL_POINT: Char = #0;
 
     Var
         FFramesArray: TFramesArray;
@@ -67,7 +71,11 @@ Type
         Procedure InputSubTaskButtons(Status: Boolean; Counter: Integer; Index, Left, Top: Integer);
         Function SearchSubTask(Index: Integer): PSubTasks;
         Procedure ChangeButtons(Status: Boolean; Index: Integer);
-    Public
+    Public                                                       
+        Function StrToWideCharForAbout(SourceString: String): TAboutString;
+        Function StrToWideCharForTitle(SourceString: String): TTitleString;
+        Function WideCharToStr(SourceWideChar: TTitleString): String; Overload;
+        Function WideCharToStr(SourceWideChar: TAboutString): String; Overload;
         Function GetSubTasksInfo(Task: TTask): String;
         Function GetAbout(Task: TTask): String;
         Function GetDate(Task: TTask): TDate;
@@ -83,7 +91,7 @@ Type
         Destructor Destroy;
         Property SubTasksCounter: Integer Read FSubTasksCounter Write FSubTasksCounter;
         Procedure InputMainData(Title: String; Date: TDate; About: String; Complexity: TComplexity);
-        Procedure InputNewSubTask(Title: String);
+        Procedure InputNewSubTask(Title: String; Status: Boolean);
         Function ComplexityDeterminant(Index: Integer): TComplexity;
         Procedure DrawSubTasks(Canvas: TCanvas; Var PaintBox: TPaintBox; Left, Top, Width, Height: Integer);
         Procedure EndTask(ChoosenButton: Integer);
@@ -93,9 +101,72 @@ Type
 Implementation
 
 Uses
+    System.Math,
     ViewSubTasksUnit,
     ChangeDataUnit,
     NewTaskUnit;
+
+Function TTask.WideCharToStr(SourceWideChar: TAboutString): String;
+Var
+    ResStr: String;
+    I: Integer;
+Begin
+    ResStr := '';
+    For I := Low(SourceWideChar) To High(SourceWideChar) Do
+    Begin
+        If SourceWideChar[I] <> NULL_POINT Then
+            ResStr := ResStr + String(SourceWideChar[I]);
+    End;
+
+    WideCharToStr := ResStr;
+End;
+
+Function TTask.WideCharToStr(SourceWideChar: TTitleString): String;
+Var
+    ResStr: String;
+    I: Integer;
+Begin
+    ResStr := '';
+    For I := Low(SourceWideChar) To High(SourceWideChar) Do
+    Begin
+        If SourceWideChar[I] <> NULL_POINT Then
+            ResStr := ResStr + String(SourceWideChar[I]);
+    End;
+
+    WideCharToStr := ResStr;
+End;
+
+Function TTask.StrToWideCharForTitle(SourceString: String): TTitleString;
+Var
+    DestArray: TTitleString;
+    NumCharsToCopy, I: Integer;
+Begin
+    NumCharsToCopy := Min(Length(SourceString), SizeOf(DestArray) Div SizeOf(WideChar) - 1);
+
+    For I := 1 To NumCharsToCopy Do
+        DestArray[I] := WideChar(SourceString[I]);
+    For I := NumCharsToCopy + 1 To High(DestArray) Do
+        DestArray[I] := WideChar(NULL_POINT);
+
+    StrToWideCharForTitle := DestArray;
+End;
+
+Function TTask.StrToWideCharForAbout(SourceString: String): TAboutString;
+Const
+    NULL_POINT: Char = #0;
+Var
+    DestArray: TAboutString;
+    NumCharsToCopy, I: Integer;
+Begin
+    NumCharsToCopy := Min(Length(SourceString), SizeOf(DestArray) Div SizeOf(WideChar) - 1);
+
+    For I := 1 To NumCharsToCopy Do
+        DestArray[I] := WideChar(SourceString[I]);
+    For I := NumCharsToCopy + 1 To High(DestArray) Do
+        DestArray[I] := WideChar(NULL_POINT);
+
+    StrToWideCharForAbout := DestArray;
+End;
 
 Function TTask.GetSubTasksInfo(Task: TTask): String;
 Var
@@ -143,13 +214,13 @@ Var
     CurrentDate: TDate;
 Begin
     CurrentDate := Date;
-    FTaskData.Title := '';
+    FTaskData.Title := StrToWideCharForTitle('');
     FTaskData.Date := CurrentDate;
-    FTaskData.About := '';
+    FTaskData.About := StrToWideCharForAbout('');
     FTaskData.SubTasks := Nil;
     FTaskData.Complexity := Easy;
     New(FHeadSubTask);
-    FHeadSubTask.Title := 'Create New Task';
+    FHeadSubTask.Title := StrToWideCharForTitle('Create New Task');
     FHeadSubTask.Next := Nil;
     FTailSubTask := FHeadSubTask;
     FSubTasksCounter := 0;
@@ -228,7 +299,7 @@ Var
 Begin
     BufSubTask := SearchSubTask(Index);
     FSubTaskLabels[Index].Caption := Title;
-    BufSubTask.Title := Title;
+    BufSubTask.Title := StrToWideCharForTitle(Title);
 End;
 
 Procedure TTask.ApplyReturnOnClick(Sender: TObject);
@@ -246,21 +317,20 @@ End;
 
 Procedure TTask.InputMainData(Title: String; Date: TDate; About: String; Complexity: TComplexity);
 Begin
-    FTaskData.Title := Title;
+    FTaskData.Title := StrToWideCharForTitle(Title);
     FTaskData.Date := Date;
-    FTaskData.About := About;
+    FTaskData.About := StrToWideCharForAbout(About);
     FTaskData.SubTasks := FHeadSubTask;
     FTaskData.Complexity := Complexity;
-    FTaskData.Status := False;
 End;
 
-Procedure TTask.InputNewSubTask(Title: String);
+Procedure TTask.InputNewSubTask(Title: String; Status: Boolean);
 Var
     NewSubTask: PSubTasks;
 Begin
     New(NewSubTask);
-    NewSubTask.Title := Title;
-    NewSubTask.Status := False;
+    NewSubTask.Title := StrToWideCharForTitle(Title);
+    NewSubTask.Status := Status;
     NewSubTask.Next := Nil;
     FTailSubTask.Next := NewSubTask;
     FTailSubTask := NewSubTask;
@@ -283,13 +353,14 @@ Begin
 End;
 
 Destructor TTask.Destroy;
-Var
-    I: Integer;
 Begin
-    Dispose(FHeadSubTask);
-    FHeadSubTask := Nil;
-    Dispose(FTailSubTask);
-    FTailSubTask := Nil;
+    FTailSubTask := FHeadSubTask;
+    While FHeadSubTask <> Nil Do
+    Begin
+        FTailSubTask := FTailSubTask.Next;
+        Dispose(FHeadSubTask);
+        FHeadSubTask := FTailSubTask;
+    End;
     ClearArray;
 End;
 

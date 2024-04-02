@@ -122,7 +122,6 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="TaskUnit.pas"/>
-        <DCCReference Include="ViewControllerUnit.pas"/>
         <DCCReference Include="InstractionUnit.pas">
             <Form>InstractionForm</Form>
             <FormType>dfm</FormType>
@@ -150,6 +149,10 @@
             <Form>BustFrame</Form>
             <FormType>dfm</FormType>
             <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="SecretBoxUnit.pas">
+            <Form>SecreteBoxForm</Form>
+            <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
