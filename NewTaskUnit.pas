@@ -1,29 +1,19 @@
-Unit NewTaskUnit;
+﻿Unit NewTaskUnit;
 
 Interface
 
 Uses
     Winapi.Windows,
-    Winapi.Messages,
     System.SysUtils,
-    System.Variants,
-    System.Classes,
-    Vcl.Graphics,
-    Vcl.Controls,
     Vcl.Forms,
-    Vcl.Dialogs,
     Vcl.ExtCtrls,
     Vcl.StdCtrls,
-    Vcl.Mask,
     Vcl.ComCtrls,
-    Vcl.VirtualImage,
-    Vcl.BaseImageCollection,
-    Vcl.ImageCollection,
-    System.ImageList,
-    Vcl.ImgList,
-    Vcl.VirtualImageList,
     ButtonFrame,
-    TaskUnit;
+    TaskUnit,
+    Vcl.Controls,
+    Vcl.Mask,
+    System.Classes;
 
 Type
     TNewTaskForm = Class(TForm)
@@ -55,10 +45,9 @@ Type
         Procedure SubTasksListFrameClick(Sender: TObject);
         Procedure ApplyFrameClick(Sender: TObject);
     Private
-        Function CheckData(TitleLEditText, AboutTaskMemoText: String): Boolean;
+        Function CheckData(TitleLEditText: String): Boolean;
     Public
-        Procedure ChangeEditShortText(Var Title: TLabel; LabeledEdit: TLabeledEdit); Overload;
-        Procedure ChangeEditShortText(Var Title: TLabel; Memo: TMemo); Overload;
+        Procedure ChangeEditShortText(Var Title: TLabel; Text: String; MaxLength, Left, Top, Width: Integer);
     End;
 
 Var
@@ -72,130 +61,132 @@ Implementation
 Uses
     ViewControllerUnit,
     TasksListScreenUnit,
-    ViewSubTasksUnit;
+    ViewSubTasksUnit,
+    ColorsUnit;
 
-Procedure TNewTaskForm.ChangeEditShortText(Var Title: TLabel; LabeledEdit: TLabeledEdit);
+{ вывод пользователю информации по вводу }
+Procedure TNewTaskForm.ChangeEditShortText(Var Title: TLabel; Text: String; MaxLength, Left, Top, Width: Integer);
 Begin
-    Title.Caption := IntToStr(Length(LabeledEdit.Text)) + '/' + IntToStr(LabeledEdit.MaxLength);
-    Title.Left := LabeledEdit.Width + LabeledEdit.Left - Title.Width;
-    Title.Top := LabeledEdit.Top - Title.Height - 1;
-    If (Length(LabeledEdit.Text) = LabeledEdit.MaxLength) Then
-        Title.Font.Color := RGB(186, 55, 71)
+    Title.Caption := IntToStr(Length(Text)) + '/' + IntToStr(MaxLength);
+    Title.Left := Width + Left - Title.Width;
+    Title.Top := Top - Title.Height - 1;
+    If (Length(Text) = MaxLength) Then
+        Title.Font.Color := ClMyRed
     Else
-        Title.Font.Color := RGB(38, 43, 50);
+        Title.Font.Color := ClText;
 End;
 
-Procedure TNewTaskForm.ChangeEditShortText(Var Title: TLabel; Memo: TMemo);
+{ проверка на ввод }
+Function TNewTaskForm.CheckData(TitleLEditText: String): Boolean;
 Begin
-    Title.Caption := IntToStr(Length(Memo.Text)) + '/' + IntToStr(Memo.MaxLength);
-    Title.Left := Memo.Width + Memo.Left - Title.Width;
-    Title.Top := Memo.Top - Title.Height - 1;
-    If (Length(Memo.Text) = Memo.MaxLength) Then
-        Title.Font.Color := RGB(186, 55, 71)
-    Else
-        Title.Font.Color := RGB(38, 43, 50);
+    CheckData := (Trim(TitleLEditText) <> '');
 End;
 
-Function TNewTaskForm.CheckData(TitleLEditText, AboutTaskMemoText: String): Boolean;
-Begin
-    CheckData := (Trim(TitleLEditText) <> '') And (Trim(AboutTaskMemoText) <> '');
-End;
-
+{ контроль ввода о задаче }
 Procedure TNewTaskForm.AboutTaskMemoChange(Sender: TObject);
 Begin
-    ChangeEditShortText(AboutTaskLenLabel, AboutTaskMemo);
-    ApplyFrame.ButtonText.Enabled := CheckData(TitleLEdit.Text, AboutTaskMemo.Text);
-    ApplyFrame.BackGroundVirtmage.Enabled := CheckData(TitleLEdit.Text, AboutTaskMemo.Text);
-    ApplyFrame.Enabled := CheckData(TitleLEdit.Text, AboutTaskMemo.Text);
+    ChangeEditShortText(AboutTaskLenLabel, AboutTaskMemo.Text, AboutTaskMemo.MaxLength, AboutTaskMemo.Left, AboutTaskMemo.Top,
+        AboutTaskMemo.Width);
 End;
 
+{ инифиализация данных }
 Procedure TNewTaskForm.FormCreate(Sender: TObject);
 Begin
+    { выставление стандартной настройки deadline-а }
     DateTPicker.Date := Now;
-    //DateTPicker.MinDate := Now;
-    SubTitleLEditChange(SubTitleLEdit);
-
-    DateTPicker.Color := Rgb(202, 205, 221);
-    TitleLEdit.Color := Rgb(202, 205, 221);
-    SubTitleLEdit.Color := Rgb(202, 205, 221);
-    NewTaskForm.Color := Rgb(202, 205, 221);
-    ComplexityCBox.Color := RGB(202, 205, 221);
-    AboutTaskMemo.Color := Rgb(202, 205, 221);
-
+    { изменение фонового цвета полей ввода }
+    DateTPicker.Color := ClFont;
+    TitleLEdit.Color := ClFont;
+    SubTitleLEdit.Color := ClFont;
+    NewTaskForm.Color := ClFont;
+    ComplexityCBox.Color := ClFont;
+    AboutTaskMemo.Color := ClFont;
+    { очищение надписи над TLabeledEdit }
     TitleLEdit.EditLabel.Caption := '';
     SubTitleLEdit.EditLabel.Caption := '';
-
-    DateTPicker.Font.Color := Rgb(38, 43, 50);
-    TitleLEdit.Font.Color := RGB(38, 43, 50);
-    SubTitleLEdit.Font.Color := RGB(38, 43, 50);
-    ComplexityCBox.Font.Color := RGB(38, 43, 50);
-    ComplexityLabel.Font.Color := RGB(38, 43, 50);
-    HeadlineLabel.Font.Color := RGB(38, 43, 50);
-    TitleLabel.Font.Color := RGB(38, 43, 50);
-    TitleLenLabel.Font.Color := RGB(38, 43, 50);
-    DateLabel.Font.Color := RGB(38, 43, 50);
-    DateMarkLabel.Font.Color := RGB(38, 43, 50);
-    AboutTaskLabel.Font.Color := RGB(38, 43, 50);
-    AboutTaskLenLabel.Font.Color := RGB(38, 43, 50);
-    SubTaskLabel.Font.Color := RGB(38, 43, 50);
-    SubTitleLenLabel.Font.Color := RGB(38, 43, 50);
-    AboutTaskMemo.Font.Color := RGB(38, 43, 50);
-
-    ChangeEditShortText(TitleLenLabel, TitleLEdit);
-    ChangeEditShortText(SubTitleLenLabel, SubTitleLEdit);
-    ChangeEditShortText(AboutTaskLenLabel, AboutTaskMemo);
+    { изменение фона текста }
+    DateTPicker.Font.Color := ClText;
+    TitleLEdit.Font.Color := ClText;
+    SubTitleLEdit.Font.Color := ClText;
+    ComplexityCBox.Font.Color := ClText;
+    ComplexityLabel.Font.Color := ClText;
+    HeadlineLabel.Font.Color := ClText;
+    TitleLabel.Font.Color := ClText;
+    TitleLenLabel.Font.Color := ClText;
+    DateLabel.Font.Color := ClText;
+    DateMarkLabel.Font.Color := ClText;
+    AboutTaskLabel.Font.Color := ClText;
+    AboutTaskLenLabel.Font.Color := ClText;
+    SubTaskLabel.Font.Color := ClText;
+    SubTitleLenLabel.Font.Color := ClText;
+    AboutTaskMemo.Font.Color := ClText;
+    { контроль изменений в полях ввода }
+    ChangeEditShortText(TitleLenLabel, TitleLEdit.Text, TitleLEdit.MaxLength, TitleLEdit.Left, TitleLEdit.Top, TitleLEdit.Width);
+    ChangeEditShortText(SubTitleLenLabel, SubTitleLEdit.Text, SubTitleLEdit.MaxLength, SubTitleLEdit.Left, SubTitleLEdit.Top,
+        SubTitleLEdit.Width);
+    ChangeEditShortText(AboutTaskLenLabel, AboutTaskMemo.Text, AboutTaskMemo.MaxLength, AboutTaskMemo.Left, AboutTaskMemo.Top,
+        AboutTaskMemo.Width);
+    SubTitleLEditChange(SubTitleLEdit);
 End;
 
+{ добавление подзадачи }
 Procedure TNewTaskForm.AddSubTaskFrameClick(Sender: TObject);
 Begin
-    NewTask.InputNewSubTask(SubTitleLEdit.Text, False);
-    SubTitleLEdit.Text := '';
+    If (Newtask.SubTasksCounter = SubTasksLimit) Then
+        TaskListForm.ErrorExit('Вы достигли лимита по подзадачам: ' + IntToStr(SubTasksLimit), 'Ошибка')
+    Else
+    Begin
+        NewTask.InputNewSubTask(SubTitleLEdit.Text, False);
+        SubTitleLEdit.Text := '';
+    End;
 End;
 
+{ просмотр подзадач }
 Procedure TNewTaskForm.SubTasksListFrameClick(Sender: TObject);
 Begin
     Application.CreateForm(TSubTasksForm, SubTasksForm);
     SubTasksForm.ShowModal;
 End;
 
+{ добавление новой задачи и выход }
 Procedure TNewTaskForm.ApplyFrameClick(Sender: TObject);
 Begin
     ChoosenOpenButton := Info;
     NewTaskForm.Close;
 End;
 
+{ контроль ввода подзадачи }
 Procedure TNewTaskForm.SubTitleLEditChange(Sender: TObject);
 Begin
-    ChangeEditShortText(SubTitleLenLabel, SubTitleLEdit);
+    ChangeEditShortText(SubTitleLenLabel, SubTitleLEdit.Text, SubTitleLEdit.MaxLength, SubTitleLEdit.Left, SubTitleLEdit.Top,
+        SubTitleLEdit.Width);
     AddSubTaskFrame.ButtonText.Enabled := Not(Trim(SubTitleLEdit.Text) = '');
     AddSubTaskFrame.BackGroundVirtmage.Enabled := Not(Trim(SubTitleLEdit.Text) = '');
     AddSubTaskFrame.Enabled := Not(Trim(SubTitleLEdit.Text) = '');
 End;
 
+{ контроль ввода заголовка задачи }
 Procedure TNewTaskForm.TitleLEditChange(Sender: TObject);
 Begin
-    ChangeEditShortText(TitleLenLabel, TitleLEdit);
-    ApplyFrame.ButtonText.Enabled := CheckData(TitleLEdit.Text, AboutTaskMemo.Text);
-    ApplyFrame.BackGroundVirtmage.Enabled := CheckData(TitleLEdit.Text, AboutTaskMemo.Text);
-    ApplyFrame.Enabled := CheckData(TitleLEdit.Text, AboutTaskMemo.Text);
+    ChangeEditShortText(TitleLenLabel, TitleLEdit.Text, TitleLEdit.MaxLength, TitleLEdit.Left, TitleLEdit.Top, TitleLEdit.Width);
+    ApplyFrame.ButtonText.Enabled := CheckData(TitleLEdit.Text);
+    ApplyFrame.BackGroundVirtmage.Enabled := CheckData(TitleLEdit.Text);
+    ApplyFrame.Enabled := CheckData(TitleLEdit.Text);
 End;
 
+{ отрисовка фона }
 Procedure TNewTaskForm.BackgroundPBoxPaint(Sender: TObject);
+Const
+    Radius: Integer = 30;
+    PenWidth: Integer = 10;
 Var
-    BitMap: TBitmap;
     Rect: TRect;
-    Radius: Integer;
 Begin
-    BitMap := TBitmap.Create();
     Rect := BackgroundPBox.ClientRect;
-    BitMap.Height := BackgroundPBox.Height;
-    BitMap.Width := BackgroundPBox.Width;
-    Radius := 30;
-    BackgroundPBox.Canvas.Brush.Color := Rgb(169, 174, 187);
-    BackgroundPBox.Canvas.Pen.Color := Rgb(179, 188, 206);
-    BackgroundPBox.Canvas.Pen.Width := 10;
-    BackgroundPBox.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right, Rect.Bottom, Radius, Radius);
-    BitMap.Free();
+    BackgroundPBox.Canvas.Brush.Color := ClBackgroundBrush;
+    BackgroundPBox.Canvas.Pen.Color := ClBackgroundPen;
+    BackgroundPBox.Canvas.Pen.Width := PenWidth;
+    BackgroundPBox.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right, Rect.Bottom, Radius, Radius)
 End;
 
 End.

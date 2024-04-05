@@ -4,23 +4,15 @@ Interface
 
 Uses
     Winapi.Windows,
-    Winapi.Messages,
-    System.SysUtils,
-    System.Variants,
-    System.Classes,
-    Vcl.Graphics,
-    Vcl.Controls,
     Vcl.Forms,
-    Vcl.Dialogs,
     Vcl.VirtualImage,
-    Vcl.BaseImageCollection,
-    Vcl.ImageCollection,
     ButtonFrame,
-    Vcl.StdCtrls;
+    Vcl.StdCtrls,
+    System.Classes,
+    Vcl.Controls;
 
 Type
     TBustFrame = Class(TFrame)
-        ImageCollection: TImageCollection;
         BackGroundVImage: TVirtualImage;
         BustVImage: TVirtualImage;
         CountLabel: TLabel;
@@ -36,39 +28,51 @@ Implementation
 
 {$R *.dfm}
 
-uses UserUnit, TasksListScreenUnit;
+Uses
+    UserUnit,
+    TasksListScreenUnit;
 
+{ попытка применения бонуса }
 Procedure TBustFrame.BustClick(Sender: TObject);
 Var
     TypeOfBust: TUser.TBusts;
     ResultKey: Integer;
     BustCountLabel: TLabel;
 Begin
+    { получение выбранного объекта }
     TypeOfBust := TaskListForm.UseBustIndex(Sender);
     BustCountLabel := TaskListForm.GetBustLabel(TypeOfBust);
+    { проверка на наличие бонуса }
     If (User.BustBought[TypeOfBust] = 0) Then
         Application.Messagebox('У вас нет данного бонуса.'#13#10'Приобретите желаемый бонус в магазине.', 'Ошибка', MB_OK + MB_ICONQUESTION)
-    Else if (TypeOfBust = TUser.TBusts.Tothem) then
-        Application.Messagebox('Данный бонус применяется автоматически'#13#10'при выполнении просроченой задачи.', 'Подсказка', MB_OK + MB_ICONQUESTION)
     Else
-    Begin
-        If TypeOfBust <> TUser.TBusts.SecretBox Then
-            ResultKey := Application.Messagebox('Хотите применить данный бонус?', 'Применение бонуса', MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2)
-        else
-            ResultKey := ID_YES;
-        If (Resultkey = ID_YES) Then
-            User.UseBust(TypeOfBust, BustCountLabel);
-    End;
+        { отделения особого типа бонусов }
+        If (TypeOfBust = TUser.TBusts.Tothem) Then
+            Application.Messagebox('Данный бонус применяется автоматически'#13#10'при выполнении просроченой задачи.', 'Подсказка',
+                MB_OK + MB_ICONQUESTION)
+        Else
+        { уточняющий момент }
+        Begin
+            If TypeOfBust <> TUser.TBusts.SecretBox Then
+                ResultKey := Application.Messagebox('Хотите применить данный бонус?', 'Применение бонуса',
+                    MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2)
+            Else
+                ResultKey := ID_YES;
+            If (Resultkey = ID_YES) Then
+                User.UseBust(TypeOfBust, BustCountLabel);
+        End;
 End;
 
+{ оброботчик события при попадании мыши на объект }
 Procedure TBustFrame.MouseEnter(Sender: TObject);
 Begin
-    BackgroundVImage.ImageIndex := 9;
+    BackgroundVImage.ImageIndex := BackgroundVImage.ImageIndex + 1;
 End;
 
+{ оброботчик события при выходе мыши с объект }
 Procedure TBustFrame.MouseLeave(Sender: TObject);
 Begin
-    BackgroundVImage.ImageIndex := 0;
+    BackgroundVImage.ImageIndex := BackgroundVImage.ImageIndex - 1;
 End;
 
 End.

@@ -4,18 +4,14 @@ Interface
 
 Uses
     Winapi.Windows,
-    Winapi.Messages,
-    System.SysUtils,
-    System.Variants,
     System.Classes,
     Vcl.Graphics,
-    Vcl.Controls,
     Vcl.Forms,
-    Vcl.Dialogs,
     Vcl.StdCtrls,
     Vcl.ExtCtrls,
-    TasksLinkedListUnit,
-    TaskUnit;
+    NewTaskUnit,
+    ColorsUnit,
+    Vcl.Controls;
 
 Type
     TSubTasksForm = Class(TForm)
@@ -33,10 +29,10 @@ Type
     End;
 
 Const
-    LeftBorder: Integer = 25;
-    TopBorder: Integer = 25;
-    WidthBorder: Integer = 612;
-    HeightBorder: Integer = 50;
+    LeftMargin: Integer = 25;
+    TopMargin: Integer = 25;
+    WidthLen: Integer = 612;
+    HeightLen: Integer = 50;
 
 Var
     SubTasksForm: TSubTasksForm;
@@ -45,42 +41,40 @@ Implementation
 
 {$R *.dfm}
 
-Uses
-    TasksListScreenUnit,
-    ViewControllerUnit,
-    NewTaskUnit,
-    ButtonFrame,
-    ChangeDataUnit;
-
 Procedure TSubTasksForm.FormCreate(Sender: TObject);
 Begin
-    MainLabel.Font.Color := Rgb(38, 43, 50);
-    SubTasksForm.Color := Rgb(202, 205, 221);
-    SubTasksSclBox.VertScrollBar.Color := Rgb(202, 205, 221);
-    NewTask.OutputText(LeftBorder, TopBorder, WidthBorder, HeightBorder);
+    { настройка пльзовательского стиля }
+    MainLabel.Font.Color := ClText;
+    SubTasksForm.Color := ClFont;
+    SubTasksSclBox.VertScrollBar.Color := ClFont;
+    NewTask.OutputSubTask(LeftMargin, TopMargin, WidthLen, HeightLen);
 End;
 
 Procedure TSubTasksForm.SubTasksPBoxPaint(Sender: TObject);
+Const
+    RADIUS: Integer = 30;
+    PEN_WIDTH: Integer = 10;
+    SUB_TASK_VISIBLE: Integer = 3;
+    MARGIN: Integer = 20;
 Var
     BitMap: TBitmap;
     RectM: TRect;
-    Radius: Integer;
 Begin
     BitMap := TBitmap.Create();
 
-    If NewTask.SubTasksCounter > 3 Then
-        SubTasksPBox.Height := NewTask.SubTasksCounter * (TopBorder + HeightBorder) + 20;
+    { настройка области видимости }
+    If NewTask.SubTasksCounter > SUB_TASK_VISIBLE Then
+        SubTasksPBox.Height := NewTask.SubTasksCounter * (TopMargin + HeightLen) + MARGIN;
 
     RectM := SubTasksPBox.ClientRect;
     BitMap.Height := SubTasksPBox.Height;
     BitMap.Width := SubTasksPBox.Width;
-    Radius := 30;
-    BitMap.Canvas.Brush.Color := Rgb(169, 174, 187);
-    BitMap.Canvas.Pen.Color := Rgb(179, 188, 206);
-    BitMap.Canvas.Pen.Width := 10;
-    BitMap.Canvas.RoundRect(RectM.Left, RectM.Top, RectM.Right, RectM.Bottom, Radius, Radius);
-
-    NewTask.DrawSubTasks(BitMap.Canvas, SubTasksPBox, LeftBorder, TopBorder, WidthBorder, HeightBorder);
+    BitMap.Canvas.Brush.Color := ClBackgroundBrush;
+    BitMap.Canvas.Pen.Color := ClBackgroundPen;
+    BitMap.Canvas.Pen.Width := PEN_WIDTH;
+    BitMap.Canvas.RoundRect(RectM.Left, RectM.Top, RectM.Right, RectM.Bottom, RADIUS, RADIUS);
+    { отрисовка фона подзадач }
+    NewTask.DrawSubTasks(BitMap.Canvas, SubTasksPBox, LeftMargin, TopMargin, WidthLen, HeightLen);
 
     SubTasksPBox.Canvas.Draw(0, 0, Bitmap);
     BitMap.Free();
@@ -89,11 +83,13 @@ End;
 Procedure TSubTasksForm.SubTasksSclBoxMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
     Var Handled: Boolean);
 Const
-    ScrollSpeed = 10;
+    SCROLL_SPEED = 10;
+    DEGREE: Integer = 60;
 Var
     Delta: Integer;
 Begin
-    Delta := WheelDelta Div 60 * ScrollSpeed;
+    { scroll bar для мыши и touch pad }
+    Delta := WheelDelta Div DEGREE * SCROLL_SPEED;
     SubTasksSclBox.VertScrollBar.Position := SubTasksSclBox.VertScrollBar.Position - Delta;
     Handled := True;
 End;

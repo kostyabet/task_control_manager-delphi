@@ -4,9 +4,11 @@ object ChangeDataForm: TChangeDataForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1048#1079#1084#1077#1085#1077#1085#1080#1077' '#1076#1072#1085#1085#1099#1093
-  ClientHeight = 73
-  ClientWidth = 320
+  ClientHeight = 84
+  ClientWidth = 324
   Color = clBtnFace
+  Constraints.MaxHeight = 122
+  Constraints.MaxWidth = 336
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -12

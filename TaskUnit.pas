@@ -3,26 +3,20 @@
 Interface
 
 Uses
+    System.Math,
     Winapi.Windows,
-    Winapi.Messages,
     System.SysUtils,
-    System.Variants,
     System.Classes,
     Vcl.Graphics,
-    Vcl.Controls,
     Vcl.Forms,
-    Vcl.Dialogs,
     Vcl.ExtCtrls,
     Vcl.StdCtrls,
-    Vcl.Mask,
-    Vcl.ComCtrls,
-    Vcl.VirtualImage,
-    Vcl.BaseImageCollection,
-    Vcl.ImageCollection,
-    System.ImageList,
-    Vcl.ImgList,
-    Vcl.VirtualImageList,
     ButtonFrame;
+
+Const
+    TitleLen = 20;
+    AboutLen = 200;
+    SubTasksLimit: Integer = 15;
 
 Type
     TButtonTypes = (Apply, Change, Return, Remove);
@@ -31,8 +25,8 @@ Type
     TFramesArray = Array Of Array Of TFrame1;
     TNumbersArray = Array Of TLabel;
     TComplexity = (Easy, Medium, Hard);
-    TTitleString = Array [1 .. 20] Of WideChar;
-    TAboutString = Array [1 .. 200] Of WideChar;
+    TTitleString = Array [1 .. TitleLen] Of WideChar;
+    TAboutString = Array [1 .. AboutLen] Of WideChar;
 
     TTask = Class
     Type
@@ -71,7 +65,7 @@ Type
         Procedure InputSubTaskButtons(Status: Boolean; Counter: Integer; Index, Left, Top: Integer);
         Function SearchSubTask(Index: Integer): PSubTasks;
         Procedure ChangeButtons(Status: Boolean; Index: Integer);
-    Public                                                       
+    Public
         Function StrToWideCharForAbout(SourceString: String): TAboutString;
         Function StrToWideCharForTitle(SourceString: String): TTitleString;
         Function WideCharToStr(SourceWideChar: TTitleString): String; Overload;
@@ -85,10 +79,10 @@ Type
         Procedure RemoveSubTask(Index: Integer);
         Procedure ChangeRemoveOnClick(Sender: TObject);
         Procedure ApplyReturnOnClick(Sender: TObject);
-        Procedure OutputText(Left, Top, Width, Height: Integer);
+        Procedure OutputSubTask(Left, Top, Width, Height: Integer);
         Procedure ClearArray();
         Constructor Create;
-        Destructor Destroy;
+        Destructor CustomDestroy;
         Property SubTasksCounter: Integer Read FSubTasksCounter Write FSubTasksCounter;
         Procedure InputMainData(Title: String; Date: TDate; About: String; Complexity: TComplexity);
         Procedure InputNewSubTask(Title: String; Status: Boolean);
@@ -101,11 +95,12 @@ Type
 Implementation
 
 Uses
-    System.Math,
     ViewSubTasksUnit,
     ChangeDataUnit,
-    NewTaskUnit;
+    NewTaskUnit,
+    ColorsUnit;
 
+{ перевод из Wide Char в String }
 Function TTask.WideCharToStr(SourceWideChar: TAboutString): String;
 Var
     ResStr: String;
@@ -121,6 +116,7 @@ Begin
     WideCharToStr := ResStr;
 End;
 
+{ перевод из String в Wide Char }
 Function TTask.WideCharToStr(SourceWideChar: TTitleString): String;
 Var
     ResStr: String;
@@ -136,6 +132,7 @@ Begin
     WideCharToStr := ResStr;
 End;
 
+{ перевод из Wide Char в String для Title }
 Function TTask.StrToWideCharForTitle(SourceString: String): TTitleString;
 Var
     DestArray: TTitleString;
@@ -151,9 +148,8 @@ Begin
     StrToWideCharForTitle := DestArray;
 End;
 
+{ перевод из Wide Char в String для About }
 Function TTask.StrToWideCharForAbout(SourceString: String): TAboutString;
-Const
-    NULL_POINT: Char = #0;
 Var
     DestArray: TAboutString;
     NumCharsToCopy, I: Integer;
@@ -168,6 +164,7 @@ Begin
     StrToWideCharForAbout := DestArray;
 End;
 
+{ получение информации о подзадаче }
 Function TTask.GetSubTasksInfo(Task: TTask): String;
 Var
     I, CompleteCounter: Integer;
@@ -180,35 +177,43 @@ Begin
         CompleteCounter := CompleteCounter + Ord((BufferHead.Status));
         BufferHead := BufferHead.Next;
     End;
+    { выполнено / всего }
     GetSubTasksInfo := IntToStr(CompleteCounter) + '/' + IntToStr(FSubTasksCounter);
 End;
 
+{ получение краткой информации о задаче }
 Function TTask.GetAbout(Task: TTask): String;
+Const
+    DefaultLen: Integer = 15;
 Var
     ResStr: String;
 Begin
     ResStr := Task.FTaskData.About;
 
-    If Length(ResStr) > 15 Then
-        ResStr := Copy(ResStr, 0, 15) + '...';
+    If Length(ResStr) > DefaultLen Then
+        ResStr := Copy(ResStr, 0, DefaultLen) + '...';
     GetAbout := ResStr;
 End;
 
+{ получение даты задачи }
 Function TTask.GetDate(Task: TTask): TDate;
 Begin
     GetDate := Task.FTaskData.Date;
 End;
 
+{ получение названия задачи }
 Function TTask.GetTitle(Task: TTask): String;
 Begin
     GetTitle := Task.FTaskData.Title;
 End;
 
+{ получение сложности задачи }
 Function TTask.GetComplexity(Task: TTask): TComplexity;
 Begin
     GetComplexity := Task.FTaskData.Complexity;
 End;
 
+{ инициализация }
 Constructor TTask.Create;
 Var
     CurrentDate: TDate;
@@ -226,6 +231,7 @@ Begin
     FSubTasksCounter := 0;
 End;
 
+{ поиск объекта }
 Function TTask.SearchClickedObject(ButtonType: Integer; Sender: TObject): Integer;
 Var
     I: Integer;
@@ -238,6 +244,7 @@ Begin
     End;
 End;
 
+{ очистка массивов }
 Procedure TTask.ClearArray();
 Var
     I: Integer;
@@ -263,6 +270,7 @@ Begin
     End;
 End;
 
+{ нажатие кнопки удалить / изменить }
 Procedure TTask.ChangeRemoveOnClick(Sender: TObject);
 Var
     ResultKey: Integer;
@@ -278,7 +286,7 @@ Begin
                 Begin
                     RemoveSubTask(ChoosenButton + 1);
                     ClearArray();
-                    OutputText(LeftBorder, TopBorder, WidthBorder, HeightBorder);
+                    OutputSubTask(LeftMargin, TopMargin, WidthLen, HeightLen);
                     SubTasksForm.SubTasksPBoxPaint(SubTasksForm.SubTasksPBox);
                 End;
             End;
@@ -293,6 +301,7 @@ Begin
     End;
 End;
 
+{ изменение подзадачи }
 Procedure TTask.ChangeSubTaskData(Title: String; Index: Integer);
 Var
     BufSubTask: PSubTasks;
@@ -302,6 +311,7 @@ Begin
     BufSubTask.Title := StrToWideCharForTitle(Title);
 End;
 
+{ нажатие кнопки вернуть / закрыть }
 Procedure TTask.ApplyReturnOnClick(Sender: TObject);
 Var
     ChoosenButton: Integer;
@@ -315,6 +325,7 @@ Begin
     End;
 End;
 
+{ ввод основной информации }
 Procedure TTask.InputMainData(Title: String; Date: TDate; About: String; Complexity: TComplexity);
 Begin
     FTaskData.Title := StrToWideCharForTitle(Title);
@@ -324,6 +335,7 @@ Begin
     FTaskData.Complexity := Complexity;
 End;
 
+{ добавление новой подзадачи }
 Procedure TTask.InputNewSubTask(Title: String; Status: Boolean);
 Var
     NewSubTask: PSubTasks;
@@ -337,6 +349,7 @@ Begin
     Inc(FSubTasksCounter);
 End;
 
+{ определитель сложности }
 Function TTask.ComplexityDeterminant(Index: Integer): TComplexity;
 Var
     ResComplexity: TComplexity;
@@ -352,7 +365,8 @@ Begin
     ComplexityDeterminant := ResComplexity;
 End;
 
-Destructor TTask.Destroy;
+{ очистка памяти }
+Destructor TTask.CustomDestroy;
 Begin
     FTailSubTask := FHeadSubTask;
     While FHeadSubTask <> Nil Do
@@ -364,37 +378,45 @@ Begin
     ClearArray;
 End;
 
+{ доавление номера подзадачи }
 Procedure TTask.InputSubTaskNumber(Index, Counter, Left, Top, Height: Integer);
+Const
+    MarginLeft: Integer = 10;
+    FontSize: Integer = 7;
 Var
     Number: TLabel;
 Begin
     Number := TLabel.Create(SubTasksForm.SubTasksSclBox);
     Number.Parent := SubTasksForm.SubTasksSclBox;
-    Number.Left := Left + 10;
-    Number.Font.Size := 7;
+    Number.Left := Left + MarginLeft;
+    Number.Font.Size := FontSize;
     Number.Top := Top + Height Div 2 - Number.Height Div 2;
-    Number.Font.Color := RGB(38, 43, 50);
+    Number.Font.Color := ClText;
     Number.Caption := IntToStr(Counter);
     Number.Visible := True;
     FNumbersArray[Index] := Number;
 End;
 
+{ название подзадачи }
 Procedure TTask.InputSubTaskTitle(Title: String; Status: Boolean; Index, Left, Top, Height: Integer);
+Const
+    MarginLeft: Integer = 35;
 Var
     TitleLabel: TLabel;
 Begin
     TitleLabel := TLabel.Create(SubTasksForm.SubTasksSclBox);
     TitleLabel.Parent := SubTasksForm.SubTasksSclBox;
-    TitleLabel.Left := Left + 35;
+    TitleLabel.Left := Left + MarginLeft;
     TitleLabel.Top := Top + Height Div 2 - TitleLabel.Height Div 2;
     TitleLabel.Font.Style := [FsBold];
-    TitleLabel.Font.Color := RGB(38, 43, 50);
+    TitleLabel.Font.Color := ClText;
     TitleLabel.Caption := Title;
     TitleLabel.Visible := True;
 
     FSubTaskLabels[Index] := TitleLabel;
 End;
 
+{ изменение наименований кнопок }
 Procedure TTask.ChangeButtons(Status: Boolean; Index: Integer);
 Begin
     If Not Status Then
@@ -416,41 +438,46 @@ Begin
     FFramesArray[Index][1].ButtonText.Left := (FFramesArray[Index][1].Width - FFramesArray[Index][1].ButtonText.Width) Div 2;
 End;
 
+{ вывод кнопок для подзадачи }
 Procedure TTask.InputSubTaskButtons(Status: Boolean; Counter: Integer; Index, Left, Top: Integer);
+Const
+    FirstButton: Integer = 1;
+    SecondButton: Integer = 2;
+    Width: Integer = 120;
+    Heigh: Integer = 23;
+    MarginTop: Integer = 24;
+Var
+    I: Integer;
 Begin
+    For I := FirstButton To SecondButton Do
+    Begin
+        FFramesArray[Index][I - 1] := TFrame1.Create(SubTasksForm.SubTasksSclBox);
+        FFramesArray[Index][I - 1].Name := 'Frame' + IntToStr(Counter + I);
+        FFramesArray[Index][I - 1].Parent := SubTasksForm.SubTasksSclBox;
+        FFramesArray[Index][I - 1].Width := Width;
+        FFramesArray[Index][I - 1].Height := Heigh;
+        FFramesArray[Index][I - 1].Left := Left - FFramesArray[Index][I - 1].Width;
+        FFramesArray[Index][I - 1].Top := Top + MarginTop * (I - 1);
+        FFramesArray[Index][I - 1].Visible := True;
+        FFramesArray[Index][I - 1].ButtonText.Font.Color := ClText;
+        FFramesArray[Index][I - 1].BackGroundVirtmage.Proportional := False;
+        FFramesArray[Index][I - 1].BackGroundVirtmage.Width := Width;
+    End;
 
-    FFramesArray[Index][0] := TFrame1.Create(SubTasksForm.SubTasksSclBox);
-    FFramesArray[Index][0].Name := 'Frame' + IntToStr(Counter + 1);
-    FFramesArray[Index][0].Parent := SubTasksForm.SubTasksSclBox;
-    FFramesArray[Index][0].Width := 120;
-    FFramesArray[Index][0].Height := 23;
-    FFramesArray[Index][0].Left := Left - FFramesArray[Index][0].Width;
-    FFramesArray[Index][0].Top := Top;
-    FFramesArray[Index][0].Visible := True;
-    FFramesArray[Index][0].ButtonText.Font.Color := Rgb(38, 43, 50);
-    FFramesArray[Index][0].BackGroundVirtmage.Proportional := False;
-    FFramesArray[Index][0].BackGroundVirtmage.Width := 120;
+    { присваивание обработчиков событий }
     FFramesArray[Index][0].BackGroundVirtmage.OnClick := ApplyReturnOnClick;
     FFramesArray[Index][0].ButtonText.OnClick := ApplyReturnOnClick;
-
-    FFramesArray[Index][1] := TFrame1.Create(SubTasksForm.SubTasksSclBox);
-    FFramesArray[Index][1].Name := 'Frame' + IntToStr(Counter + 2);
-    FFramesArray[Index][1].Parent := SubTasksForm.SubTasksSclBox;
-    FFramesArray[Index][1].Width := 120;
-    FFramesArray[Index][1].Height := 23;
-    FFramesArray[Index][1].Left := Left - FFramesArray[Index][1].Width;
-    FFramesArray[Index][1].Top := Top + 24;
-    FFramesArray[Index][1].Visible := True;
-    FFramesArray[Index][1].ButtonText.Font.Color := Rgb(38, 43, 50);
-    FFramesArray[Index][1].BackGroundVirtmage.Proportional := False;
-    FFramesArray[Index][1].BackGroundVirtmage.Width := 120;
     FFramesArray[Index][1].BackGroundVirtmage.OnClick := ChangeRemoveOnClick;
     FFramesArray[Index][1].ButtonText.OnClick := ChangeRemoveOnClick;
 
     ChangeButtons(Status, Index);
 End;
 
-Procedure TTask.OutputText(Left, Top, Width, Height: Integer);
+{ вывод подазадачи }
+Procedure TTask.OutputSubTask(Left, Top, Width, Height: Integer);
+Const
+    ButtonCount: Integer = 2;
+    StartMargin: Integer = 2;
 Var
     Counter, SubCounter, I, ScrollPos: Integer;
     BufHeadSubTasks: PSubTasks;
@@ -460,38 +487,38 @@ Begin
     BufHeadSubTasks := FHeadSubTask.Next;
     SubCounter := 1;
     Counter := 0;
-    SetLength(FFramesArray, FSubTasksCounter, 2);
-    SetLength(FButtonsTypeArr, FSubTasksCounter, 2);
+    SetLength(FFramesArray, FSubTasksCounter, ButtonCount);
+    SetLength(FButtonsTypeArr, FSubTasksCounter, ButtonCount);
     SetLength(FSubTaskLabels, FSubTasksCounter);
     SetLength(FNumbersArray, FSubTasksCounter);
     For I := 1 To FSubTasksCounter Do
     Begin
         InputSubTaskNumber(Counter, Counter + 1, Left, Top + Counter * (Height + Top), Height);
         InputSubTaskTitle(BufHeadSubTasks.Title, BufHeadSubTasks.Status, Counter, Left, Top + Counter * (Height + Top), Height);
-        InputSubTaskButtons(BufHeadSubTasks.Status, SubCounter, Counter, Width - Left, 2 + Top + Counter * (Height + Top));
+        InputSubTaskButtons(BufHeadSubTasks.Status, SubCounter, Counter, Width - Left, StartMargin + Top + Counter * (Height + Top));
 
-        Inc(SubCounter, 2);
+        Inc(SubCounter, ButtonCount);
         Inc(Counter);
         BufHeadSubTasks := BufHeadSubTasks.Next;
     End;
     SubTasksForm.SubTasksSclBox.VertScrollBar.Position := ScrollPos;
 End;
 
+{ отприсовка подазадач }
 Procedure TTask.DrawSubTasks(Canvas: TCanvas; Var PaintBox: TPaintBox; Left, Top, Width, Height: Integer);
+Const
+    Radius: Integer = 5;
 Var
     BufHeadSubTasks: PSubTasks;
-    Radius, Counter: Integer;
+    Counter: Integer;
     NewRect: TRect;
     I: Integer;
 Begin
     BufHeadSubTasks := FHeadSubTask.Next;
     Counter := 0;
     NewRect := Rect(Left, Top, Width - Left, Top + Height);
-    Canvas.Brush.Color := Rgb(130, 138, 157);
-    Canvas.Pen.Color := Rgb(130, 138, 157);
-    Radius := 5;
-    Canvas.Brush.Style := BsSolid;
-    Canvas.Pen.Width := 0;
+    Canvas.Brush.Color := ClTasksBackGround;
+    Canvas.Pen.Color := ClTasksBackGround;
     For I := 1 To FSubTasksCounter Do
     Begin
         Canvas.RoundRect(NewRect.Left, NewRect.Top + Counter * (Height + NewRect.Top), NewRect.Right,
@@ -501,6 +528,7 @@ Begin
     End;
 End;
 
+{ поиск подзадачи }
 Function TTask.SearchSubTask(Index: Integer): PSubTasks;
 Var
     ResultSubTask: PSubTasks;
@@ -512,6 +540,7 @@ Begin
     SearchSubTask := ResultSubTask;
 End;
 
+{ завершение задачи }
 Procedure TTask.EndTask(ChoosenButton: Integer);
 Var
     BufSubTasks: PSubTasks;
@@ -521,6 +550,7 @@ Begin
     ChangeButtons(BufSubTasks.Status, ChoosenButton);
 End;
 
+{ возвращение задачи }
 Procedure TTask.ReturnTask(ChoosenButton: Integer);
 Var
     BufSubTasks: PSubTasks;
@@ -530,6 +560,7 @@ Begin
     ChangeButtons(BufSubTasks.Status, ChoosenButton);
 End;
 
+{ удаление задачи }
 Procedure TTask.RemoveSubTask(Index: Integer);
 Var
     PrevSubTasks: PSubTasks;

@@ -1,31 +1,21 @@
-Unit StoreUnit;
+﻿Unit StoreUnit;
 
 Interface
 
 Uses
     Winapi.Windows,
-    Winapi.Messages,
     System.SysUtils,
-    System.Variants,
-    System.Classes,
-    Vcl.Graphics,
-    Vcl.Controls,
     Vcl.Forms,
-    Vcl.Dialogs,
     Vcl.StdCtrls,
     Vcl.ExtCtrls,
     Vcl.VirtualImage,
-    Vcl.BaseImageCollection,
-    Vcl.ImageCollection,
     ButtonFrame,
-    Vcl.Imaging.Pngimage,
-    UserUnit;
+    UserUnit, Vcl.Controls, System.Classes;
 
 Type
     TStoreForm = Class(TForm)
         TitleLabel: TLabel;
         StoreFontPBox: TPaintBox;
-        ImageCollection: TImageCollection;
         BackGroundHP: TVirtualImage;
         BackGroundTothem: TVirtualImage;
         BackGroundHPBust: TVirtualImage;
@@ -51,7 +41,7 @@ Type
         TothemBustFrame: TFrame1;
         CoinsBustFrame: TFrame1;
         CoinsLabel: TLabel;
-        CoinsImage: TImage;
+        CoinsImage: TVirtualImage;
         Procedure FormCreate(Sender: TObject);
         Procedure StoreFontPBoxPaint(Sender: TObject);
         Procedure ButtonFrameBuyClick(Sender: TObject);
@@ -72,19 +62,23 @@ Implementation
 {$R *.dfm}
 
 Uses
-    TasksListScreenUnit;
+    TasksListScreenUnit,
+    ColorsUnit;
 
+{ центрирование текста }
 Procedure TStoreForm.MoveInCenter(Frame: TFrame1);
 Begin
     Frame.ButtonText.Left := (Frame.Width - Frame.ButtonText.Width) Div 2;
 End;
 
+{ тзменние видимости кнопок }
 Procedure TStoreForm.TreatmentButton(Frame: TFrame1; Status: Boolean);
 Begin
     Frame.BackGroundVirtmage.Enabled := Status;
     Frame.ButtonText.Enabled := Status;
 End;
 
+{ проверка на возможность покупки }
 Procedure TStoreForm.CheckEnabled();
 Var
     Costs: TUser.TBustsCost;
@@ -100,6 +94,7 @@ Begin
     TreatmentButton(SecretBoxFrame, User.IsCanBuy(Costs[TUser.TBusts.SecretBox]));
 End;
 
+{ обработка попытки купить бонус }
 Procedure TStoreForm.ButtonFrameBuyClick(Sender: TObject);
 Begin
     If (Sender = HPFrame.ButtonText) Or (Sender = HPFrame.BackGroundVirtmage) Then
@@ -132,6 +127,7 @@ Begin
     TaskListForm.UpDateUserInfo;
 End;
 
+{ заполнение цен бонусов }
 Procedure TStoreForm.InputCostInCell(Costs: TUser.TBustsCost);
 Begin
     HPFrame.ButtonText.Caption := IntToStr(Costs[TUser.TBusts.HP]);
@@ -152,32 +148,30 @@ Begin
     MoveInCenter(SecretBoxFrame);
 End;
 
+{ инициализация данных формы }
 Procedure TStoreForm.FormCreate(Sender: TObject);
 Begin
-    StoreForm.Color := Rgb(202, 205, 221);
-    TitleLabel.Font.Color := RGB(38, 43, 50);
-    CoinsLabel.Font.Color := RGB(38, 43, 50);
+    StoreForm.Color := ClFont;
+    TitleLabel.Font.Color := ClText;
+    CoinsLabel.Font.Color := ClText;
     CoinsLabel.Caption := IntToStr(User.Coins);
     CheckEnabled;
     InputCostInCell(User.GetBustsCost());
 End;
 
+{ отрисовка фона магазина }
 Procedure TStoreForm.StoreFontPBoxPaint(Sender: TObject);
+Const
+    RADIUS: Integer = 30;
+    PEN_WIDTH: Integer = 10;
 Var
-    BitMap: TBitmap;
     Rect: TRect;
-    Radius: Integer;
 Begin
-    BitMap := TBitmap.Create();
     Rect := StoreFontPBox.ClientRect;
-    BitMap.Height := StoreFontPBox.Height;
-    BitMap.Width := StoreFontPBox.Width;
-    Radius := 30;
-    StoreFontPBox.Canvas.Brush.Color := Rgb(169, 174, 187);
-    StoreFontPBox.Canvas.Pen.Color := Rgb(179, 188, 206);
-    StoreFontPBox.Canvas.Pen.Width := 10;
-    StoreFontPBox.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right, Rect.Bottom, Radius, Radius);
-    BitMap.Free();
+    StoreFontPBox.Canvas.Brush.Color := ClBackgroundBrush;
+    StoreFontPBox.Canvas.Pen.Color := ClBackgroundPen;
+    StoreFontPBox.Canvas.Pen.Width := PEN_WIDTH;
+    StoreFontPBox.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right, Rect.Bottom, RADIUS, RADIUS);
 End;
 
 End.

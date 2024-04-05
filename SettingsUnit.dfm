@@ -1,14 +1,14 @@
-object Form1: TForm1
+object SettingsForm: TSettingsForm
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
-  ClientHeight = 91
-  ClientWidth = 253
+  ClientHeight = 111
+  ClientWidth = 273
   Color = clBtnFace
-  Constraints.MaxHeight = 129
-  Constraints.MaxWidth = 265
+  Constraints.MaxHeight = 149
+  Constraints.MaxWidth = 285
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -12
@@ -17,26 +17,36 @@ object Form1: TForm1
   Position = poScreenCenter
   OnCreate = FormCreate
   TextHeight = 15
-  object PaintBox1: TPaintBox
+  object BackgroundPBox: TPaintBox
     Left = 10
     Top = 10
-    Width = 233
-    Height = 71
-    OnPaint = PaintBox1Paint
+    Width = 253
+    Height = 87
+    OnPaint = BackgroundPBoxPaint
   end
-  object ToggleSwitch1: TToggleSwitch
-    Left = 136
-    Top = 32
-    Width = 88
-    Height = 20
+  object ThemeLabel: TLabel
+    Left = 24
+    Top = 20
+    Width = 97
+    Height = 15
+    Caption = #1062#1074#1077#1090#1086#1074#1072#1103' '#1089#1093#1077#1084#1072':'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -12
     Font.Name = 'Segoe UI'
-    Font.Style = []
+    Font.Style = [fsBold]
     ParentFont = False
-    StateCaptions.CaptionOn = #1042#1082#1083'.'
-    StateCaptions.CaptionOff = #1042#1099#1082#1083'.'
+  end
+  object ThemeCBox: TComboBox
+    Left = 127
+    Top = 17
+    Width = 120
+    Height = 23
+    Style = csDropDownList
+    Color = clScrollBar
     TabOrder = 0
+    OnChange = ThemeCBoxChange
+    Items.Strings = (
+      #1089#1074#1077#1090#1083#1072#1103)
   end
 end

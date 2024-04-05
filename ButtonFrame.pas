@@ -1,25 +1,16 @@
-Unit ButtonFrame;
+﻿Unit ButtonFrame;
 
 Interface
 
 Uses
-    Winapi.Windows,
-    Winapi.Messages,
-    System.SysUtils,
-    System.Variants,
-    System.Classes,
-    Vcl.Graphics,
-    Vcl.Controls,
     Vcl.Forms,
-    Vcl.Dialogs,
     Vcl.VirtualImage,
-    Vcl.BaseImageCollection,
-    Vcl.ImageCollection,
-    Vcl.StdCtrls;
+    Vcl.StdCtrls,
+    System.Classes,
+    Vcl.Controls;
 
 Type
     TFrame1 = Class(TFrame)
-        ImageCollection: TImageCollection;
         BackGroundVirtmage: TVirtualImage;
         ButtonText: TLabel;
         Procedure MouseLeave(Sender: TObject);
@@ -34,14 +25,19 @@ Implementation
 
 {$R *.dfm}
 
+Uses
+    TasksListScreenUnit;
+
+{ уход курсора с объекта }
 Procedure TFrame1.MouseLeave(Sender: TObject);
 Begin
-    BackGroundVirtmage.ImageIndex := 0;
+    BackGroundVirtmage.ImageIndex := BackGroundVirtmage.ImageIndex - 1;
 End;
 
+{ попадание курсора на объект }
 Procedure TFrame1.MouseEnter(Sender: TObject);
 Begin
-    BackGroundVirtmage.ImageIndex := 1;
+    BackGroundVirtmage.ImageIndex := BackGroundVirtmage.ImageIndex + 1;
 End;
 
 End.

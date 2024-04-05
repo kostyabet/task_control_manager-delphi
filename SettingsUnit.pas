@@ -13,14 +13,14 @@ Uses
     Vcl.Forms,
     Vcl.Dialogs,
     Vcl.ExtCtrls,
-    Vcl.WinXCtrls;
+    Vcl.WinXCtrls,
+    Vcl.StdCtrls;
 
 Type
-    TForm1 = Class(TForm)
-        PaintBox1: TPaintBox;
-        ToggleSwitch1: TToggleSwitch;
-        Procedure FormCreate(Sender: TObject);
-        Procedure PaintBox1Paint(Sender: TObject);
+    TSettingsForm = Class(TForm)
+        BackgroundPBox: TPaintBox;
+        ThemeLabel: TLabel;
+        ThemeCBox: TComboBox;
     Private
         { Private declarations }
     Public
@@ -28,36 +28,10 @@ Type
     End;
 
 Var
-    Form1: TForm1;
+    SettingsForm: TSettingsForm;
 
 Implementation
 
 {$R *.dfm}
-
-Procedure TForm1.FormCreate(Sender: TObject);
-Begin
-    Form1.Color := Rgb(202, 205, 221);
-    ToggleSwitch1.FrameColor := Rgb(202, 205, 221);
-    ToggleSwitch1.ThumbColor := Rgb(38, 43, 50);
-    ToggleSwitch1.Font.Color := Rgb(38, 43, 50);
-End;
-
-Procedure TForm1.PaintBox1Paint(Sender: TObject);
-Var
-    BitMap: TBitmap;
-    Rect: TRect;
-    Radius: Integer;
-Begin
-    BitMap := TBitmap.Create();
-    Rect := PaintBox1.ClientRect;
-    BitMap.Height := PaintBox1.Height;
-    BitMap.Width := PaintBox1.Width;
-    Radius := 30;
-    PaintBox1.Canvas.Brush.Color := Rgb(169, 174, 187);
-    PaintBox1.Canvas.Pen.Color := Rgb(179, 188, 206);
-    PaintBox1.Canvas.Pen.Width := 10;
-    PaintBox1.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right, Rect.Bottom, Radius, Radius);
-    BitMap.Free();
-End;
 
 End.

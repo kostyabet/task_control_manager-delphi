@@ -4,53 +4,37 @@ Interface
 
 Uses
     Winapi.Windows,
-    Winapi.Messages,
     System.SysUtils,
-    System.Variants,
     System.Classes,
-    Vcl.Graphics,
-    Vcl.Controls,
     Vcl.Forms,
-    Vcl.Dialogs,
     Vcl.ExtCtrls,
-    Vcl.Buttons,
-    System.ImageList,
-    Vcl.ImgList,
     Vcl.StdCtrls,
-    Vcl.Imaging.Pngimage,
     Vcl.VirtualImage,
-    Vcl.BaseImageCollection,
     Vcl.ImageCollection,
-    Vcl.VirtualImageList,
     ButtonFrame,
     TasksLinkedListUnit,
     TaskFrame,
     TaskUnit,
     UserUnit,
     BustOutputFrame,
-    IniFiles;
+    Vcl.BaseImageCollection,
+    Vcl.Controls;
 
 Type
     TTaskListForm = Class(TForm)
-        PaintBox2: TPaintBox;
+        BinusesPBox: TPaintBox;
         TasksListPaintBox: TPaintBox;
         MenuBackGround: TPaintBox;
-        Image1: TImage;
-        Image2: TImage;
         CoinsLabel: TLabel;
-        Label2: TLabel;
+        LvlInfoLabel: TLabel;
         LvlLabel: TLabel;
-        XPLabel: TLabel;
-        HPLabel: TLabel;
         XPBox: TPaintBox;
         HPPBox: TPaintBox;
         StoreButtonFrame: TFrame1;
-        ProfileFrame: TFrame1;
-        SettingsFrame: TFrame1;
-        InstractionFrame: TFrame1;
         AddTaskFrame: TFrame1;
+        InstractionFrame: TFrame1;
         TasksListSclBox: TScrollBox;
-        ImageCollection: TImageCollection;
+        BackgroundImgCollection: TImageCollection;
         HPFrame: TBustFrame;
         CoinsFrame: TBustFrame;
         XPFrame: TBustFrame;
@@ -64,34 +48,32 @@ Type
         ShowHPBustVImage: TVirtualImage;
         ShowXPBustVImage: TVirtualImage;
         ShowCoinsBustVImage: TVirtualImage;
-    FreeTaskVImage: TVirtualImage;
+        FreeTaskVImage: TVirtualImage;
         UsedBonusPanel: TPanel;
         CheckTaskTimer: TTimer;
+        CoinsVImage: TVirtualImage;
+        IconsImgCollection: TImageCollection;
         Procedure FormCreate(Sender: TObject);
-        Procedure PaintBox2Paint(Sender: TObject);
+        Procedure BonusesPBoxPaint(Sender: TObject);
         Procedure TasksListPaintBoxPaint(Sender: TObject);
         Procedure MenuBackGroundPaint(Sender: TObject);
         Procedure HPPBoxPaint(Sender: TObject);
         Procedure XPBoxPaint(Sender: TObject);
         Procedure StoreButtonFrameClick(Sender: TObject);
-        Procedure Frame13Label1Click(Sender: TObject);
-        Procedure Frame13VirtualImage1Click(Sender: TObject);
-        Procedure Frame15VirtualImage1Click(Sender: TObject);
-        Procedure Frame14Label1Click(Sender: TObject);
-        Procedure Frame14VirtualImage1Click(Sender: TObject);
-        Procedure Frame12VirtualImage1Click(Sender: TObject);
-        Procedure Frame12Label1Click(Sender: TObject);
+        Procedure NewTaskAddClick(Sender: TObject);
+        Procedure InstractionInfoClick(Sender: TObject);
         Procedure AddNewBlockInBlocksArr;
         Procedure TasksListSclBoxMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
             Var Handled: Boolean);
-        Procedure UpDateUserInfo();
-        Function UseBustIndex(Sender: TObject): TUser.TBusts;
         Procedure FormDestroy(Sender: TObject);
         Procedure CheckTaskTime(Sender: TObject);
+        Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
     Private
 
     Public
-        Procedure ErrorExit(ErrorStr: String);
+        Procedure UpDateUserInfo;
+        Function UseBustIndex(Sender: TObject): TUser.TBusts;
+        Procedure ErrorExit(ErrorStr, Caption: String);
         Procedure RemoveCompleteTask(Index: Integer);
         Procedure ChangeBustsCounter(CountLabel: TLabel; TypeOfBust: TUser.TBusts);
         Function GetBustLabel(TypeOfBust: TUser.TBusts): TLabel;
@@ -117,8 +99,10 @@ Uses
     StoreUnit,
     SettingsUnit,
     InstractionUnit,
-    ProfileUnit;
+    ProfileUnit,
+    ColorsUnit;
 
+{ информация о количестве бонуса }
 Procedure TTaskListForm.ChangeBustsCounter(CountLabel: TLabel; TypeOfBust: TUser.TBusts);
 Var
     LeftBorder: Integer;
@@ -128,6 +112,7 @@ Begin
     CountLabel.Left := LeftBorder - CountLabel.Width;
 End;
 
+{ проверка задачи на время }
 Procedure TTaskListForm.CheckTaskTime(Sender: TObject);
 Var
     CurentTask: TListOfTasks.PTasks;
@@ -147,6 +132,7 @@ Begin
     End;
 End;
 
+{ получение label-а }
 Function TTaskListForm.GetBustLabel(TypeOfBust: TUser.TBusts): TLabel;
 Begin
     Case TypeOfBust Of
@@ -169,7 +155,10 @@ Begin
     End;
 End;
 
+{ удаление выполненой задачи }
 Procedure TTaskListForm.RemoveCompleteTask(Index: Integer);
+Const
+    DefMargin: Integer = 8;
 Var
     TempArr: TArrayOfBlocks;
     I: Integer;
@@ -179,7 +168,7 @@ Begin
         If (I <> Index) Then
         Begin
             TempArr[I - Ord(I > Index)] := FArrayOfBlocks[I];
-            TempArr[I - Ord(I > Index)].Top := 8 + (I - Ord(I > Index)) * (8 + TempArr[I - Ord(I > Index)].Height);
+            TempArr[I - Ord(I > Index)].Top := DefMargin + (I - Ord(I > Index)) * (DefMargin + TempArr[I - Ord(I > Index)].Height);
         End
         Else
             FArrayOfBlocks[I].Destroy;
@@ -187,20 +176,22 @@ Begin
     FArrayOfBlocks := Copy(TempArr);
 End;
 
+{ обновление информации о пользователе }
 Procedure TTaskListForm.UpDateUserInfo();
 Var
     LeftBorder: Integer;
 Begin
     XPBoxPaint(TaskListForm.XPBox);
-    XPBox.Hint := IntToStr(User.XP) + '/' + IntToStr(User.MaxXP);
+    XPBox.Hint := 'опыт: ' + IntToStr(User.XP) + '/' + IntToStr(User.MaxXP);
     HPPBoxPaint(TaskListForm.HPPBox);
-    HPPBox.Hint := IntToStr(User.HP) + '/' + IntToStr(User.MaxHP);
+    HPPBox.Hint := 'здоровье: ' + IntToStr(User.HP) + '/' + IntToStr(User.MaxHP);
     LeftBorder := LvlLabel.Left + LvlLabel.Width;
     LvlLabel.Caption := IntToStr(User.CurentLvl);
     LvlLabel.Left := LeftBorder - LvlLabel.Width;
     CoinsLabel.Caption := IntToStr(User.Coins);
 End;
 
+{ добавление нового блока задачи }
 Procedure TTaskListForm.AddNewBlockInBlocksArr;
 Var
     TempArrOfBlocks: TArrayOfBlocks;
@@ -220,8 +211,10 @@ Begin
     TasksListSclBox.VertScrollBar.Position := Position;
 End;
 
+{ исользование бонуса }
 Function TTaskListForm.UseBustIndex(Sender: TObject): TUser.TBusts;
 Begin
+    UseBustIndex := TUser.TBusts.HP;
     If (Sender = HPFrame.BackGroundVImage) Or (Sender = HPFrame.CountLabel) Or (Sender = HPFrame.BustVImage) Then
         UseBustIndex := TUser.TBusts.HP;
 
@@ -247,22 +240,36 @@ Begin
         UseBustIndex := TUser.TBusts.SecretBox;
 End;
 
-Procedure TTaskListForm.ErrorExit(ErrorStr: String);
+{ вывод информации об ошибке }
+Procedure TTaskListForm.ErrorExit(ErrorStr, Caption: String);
 Begin
-    Application.Messagebox(PWideChar(ErrorStr), 'Сохранение', MB_OK + MB_ICONERROR + MB_DEFBUTTON2);
+    Application.Messagebox(PWideChar(ErrorStr), PWideChar(Caption), MB_OK + MB_ICONERROR + MB_DEFBUTTON2);
+End;
+
+{ инициализация данных }
+Procedure TTaskListForm.FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
+Var
+    ResultKey: Integer;
+Begin
+    ResultKey := Application.Messagebox('Вы уверены, что хотите закрыть оконное приложение?', 'Выход',
+        MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2);
+
+    CanClose := ResultKey = ID_YES;
 End;
 
 Procedure TTaskListForm.FormCreate(Sender: TObject);
 Begin
     User := TUser.Create;
     User.LoadUserDataFromFile;
+    InitializationColor;
     TasksList := TListOfTasks.Create;
     TasksList.LoadTasksFromFile();
     UpDateUserInfo;
     TaskListForm.UpDateUserInfo;
-    TaskListForm.Color := RGB(202, 205, 221);
+    TaskListForm.Color := ClFont;
 End;
 
+{ очистка данных при закрытии }
 Procedure TTaskListForm.FormDestroy(Sender: TObject);
 Begin
     User.SaveUserDataInFile;
@@ -271,48 +278,30 @@ Begin
     TasksList.DestroyTaskList;
 End;
 
+{ нажатие на кнопку магазина }
 Procedure TTaskListForm.StoreButtonFrameClick(Sender: TObject);
 Begin
     Application.CreateForm(TStoreForm, StoreForm);
     StoreForm.ShowModal;
 End;
 
-Procedure TTaskListForm.Frame12Label1Click(Sender: TObject);
+Procedure TTaskListForm.InstractionInfoClick(Sender: TObject);
 Begin
-    ProfileForm.ShowModal;
-End;
-
-Procedure TTaskListForm.Frame12VirtualImage1Click(Sender: TObject);
-Begin
-    ProfileForm.ShowModal;
-End;
-
-Procedure TTaskListForm.Frame13Label1Click(Sender: TObject);
-Begin
-    Form1.ShowModal;
-End;
-
-Procedure TTaskListForm.Frame13VirtualImage1Click(Sender: TObject);
-Begin
-    Form1.ShowModal;
-End;
-
-Procedure TTaskListForm.Frame14Label1Click(Sender: TObject);
-Begin
+    Application.CreateForm(TInstractionForm, InstractionForm);
     InstractionForm.ShowModal;
 End;
 
-Procedure TTaskListForm.Frame14VirtualImage1Click(Sender: TObject);
-Begin
-    InstractionForm.ShowModal;
-End;
-
-Procedure TTaskListForm.Frame15VirtualImage1Click(Sender: TObject);
+{ доабвление новой задачи }
+Procedure TTaskListForm.NewTaskAddClick(Sender: TObject);
 Var
     Complexity: TComplexity;
 Begin
     NewTask := TTask.Create;
-    Application.CreateForm(TNewTaskForm, NewTaskForm);
+    NewTaskForm.DateTPicker.Date := Now;
+    NewTaskForm.ComplexityCBox.ItemIndex := 0;
+    NewTaskForm.AboutTaskMemo.Text := '';
+    NewTaskForm.TitleLEdit.Text := '';
+    NewTaskForm.SubTitleLEdit.Text := '';
     NewTaskForm.ShowModal;
     If (ChoosenOpenButton = Info) Then
     Begin
@@ -324,125 +313,104 @@ Begin
     End;
 End;
 
+{ отрисовка опыта }
 Procedure TTaskListForm.XPBoxPaint(Sender: TObject);
+Const
+    Radius: Integer = 10;
+    PenWidth: Integer = 1;
 Var
-    BitMap: TBitmap;
     Rect: TRect;
-    Radius: Integer;
 Begin
-    BitMap := TBitmap.Create();
-    BitMap.Height := XPBox.Height;
-    BitMap.Width := XPBox.Width;
-
-    XPBox.Canvas.Brush.Color := RGB(179, 186, 200);
-    XPBox.Canvas.Pen.Color := RGB(179, 186, 200);
-    XPBox.Canvas.Pen.Width := 2;
-    Radius := 10;
+    XPBox.Canvas.Brush.Color := ClBackgroundPen;
+    XPBox.Canvas.Pen.Color := ClBackgroundPen;
+    XPBox.Canvas.Pen.Width := PenWidth;
     Rect := XPBox.ClientRect;
     XPBox.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right, Rect.Bottom, Radius, Radius);
 
-    XPBox.Canvas.Brush.Color := RGB(26, 155, 85);
-    XPBox.Canvas.Pen.Color := RGB(26, 155, 85);
-    XPBox.Canvas.Pen.Width := 2;
-    Radius := 10;
+    XPBox.Canvas.Brush.Color := ClXP;
+    XPBox.Canvas.Pen.Color := ClXP;
     Rect := XPBox.ClientRect;
-    XPBox.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right * User.GetXpPersent Div 100, Rect.Bottom, Radius, Radius);
-
-    BitMap.Free();
+    XPBox.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right * User.GetXpPersent Div High(TPercent), Rect.Bottom, Radius, Radius);
 End;
 
-Procedure TTaskListForm.PaintBox2Paint(Sender: TObject);
+{ фон бонусов }
+Procedure TTaskListForm.BonusesPBoxPaint(Sender: TObject);
+Const
+    PEN_WIDTH: Integer = 2;
+    RADIUS: Integer = 10;
 Var
-    BitMap: TBitmap;
     Rect: TRect;
-    Radius: Integer;
 Begin
-    BitMap := TBitmap.Create();
-    Rect := PaintBox2.ClientRect;
-    BitMap.Height := PaintBox2.Height;
-    BitMap.Width := PaintBox2.Width;
-    Radius := 10;
-    PaintBox2.Canvas.Brush.Color := RGB(179, 186, 200);
-    PaintBox2.Canvas.Pen.Color := RGB(179, 186, 200);
-    PaintBox2.Canvas.Pen.Width := 2;
-    PaintBox2.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right, Rect.Bottom, Radius, Radius);
-    BitMap.Free();
+    BinusesPBox.Canvas.Brush.Color := ClBackgroundPen;
+    BinusesPBox.Canvas.Pen.Color := ClBackgroundPen;
+    BinusesPBox.Canvas.Pen.Width := PEN_WIDTH;
+    Rect := BinusesPBox.ClientRect;
+    BinusesPBox.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right, Rect.Bottom, RADIUS, RADIUS);
 End;
 
+{ фон меню }
 Procedure TTaskListForm.MenuBackGroundPaint(Sender: TObject);
 Var
-    BitMap: TBitmap;
     Rect: TRect;
-    Radius: Integer;
 Begin
-    BitMap := TBitmap.Create();
-    BitMap.Height := MenuBackGround.Height;
-    BitMap.Width := MenuBackGround.Width;
-
-    MenuBackGround.Canvas.Brush.Color := RGB(179, 186, 200);
-    MenuBackGround.Canvas.Pen.Color := RGB(179, 186, 200);
-    MenuBackGround.Canvas.Pen.Width := 2;
-    Radius := 5;
+    MenuBackGround.Canvas.Brush.Color := ClBackgroundBrush;
+    MenuBackGround.Canvas.Pen.Color := ClBackgroundBrush;
     Rect := MenuBackGround.ClientRect;
-    MenuBackGround.Canvas.RoundRect(Rect.Left - 100, Rect.Top, Rect.Right, Rect.Bottom, Radius, Radius);
-    BitMap.Free();
+    MenuBackGround.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right, Rect.Bottom, 0, 0);
 End;
 
+{ фон задач }
 Procedure TTaskListForm.TasksListPaintBoxPaint(Sender: TObject);
+Const
+    VISIBLE_TASKS_COUNT: Integer = 6;
+    BASIC_MARGIN: Integer = 8;
+    RADIUS: Integer = 30;
+    PEN_WIDTH: Integer = 10;
 Var
-    BitMap: TBitmap;
     Rect: TRect;
-    Radius: Integer;
 Begin
-    If (TasksList.FTasksCounter > 6) Then
-        TasksListPaintBox.Height := 8 + TasksList.FTasksCounter * (8 + FArrayOfBlocks[High(FArrayOfBlocks)].Height);
+    If (TasksList.FTasksCounter > VISIBLE_TASKS_COUNT) Then
+        TasksListPaintBox.Height := BASIC_MARGIN + TasksList.FTasksCounter * (BASIC_MARGIN + FArrayOfBlocks[High(FArrayOfBlocks)].Height);
 
-    BitMap := TBitmap.Create();
+    TasksListPaintBox.Canvas.Brush.Color := ClTasksBackGround;
+    TasksListPaintBox.Canvas.Pen.Color := ClBackgroundPen;
+    TasksListPaintBox.Canvas.Pen.Width := PEN_WIDTH;
     Rect := TasksListPaintBox.ClientRect;
-    BitMap.Height := TasksListPaintBox.Height;
-    BitMap.Width := TasksListPaintBox.Width;
-    Radius := 30;
-    TasksListPaintBox.Canvas.Brush.Color := Rgb(130, 138, 157);
-    TasksListPaintBox.Canvas.Pen.Color := Rgb(179, 186, 200);
-    TasksListPaintBox.Canvas.Pen.Width := 10;
-    TasksListPaintBox.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right, Rect.Bottom, Radius, Radius);
-    BitMap.Free();
+    TasksListPaintBox.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right, Rect.Bottom, RADIUS, RADIUS);
 End;
 
+{ настройка scroll bar для мыши и touch pad }
 Procedure TTaskListForm.TasksListSclBoxMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
     Var Handled: Boolean);
 Const
+    DegreeOfOffset: Integer = 60;
     ScrollSpeed = 10;
 Var
     Delta: Integer;
 Begin
-    Delta := WheelDelta Div 60 * ScrollSpeed;
+    Delta := WheelDelta Div DegreeOfOffset * ScrollSpeed;
     TasksListSclBox.VertScrollBar.Position := TasksListSclBox.VertScrollBar.Position - Delta;
     Handled := True;
 End;
 
+{ вывод информации о здоровье }
 Procedure TTaskListForm.HPPBoxPaint(Sender: TObject);
+Const
+    Radius: Integer = 10;
+    PenWidth: Integer = 1;
 Var
-    BitMap: TBitmap;
     Rect: TRect;
-    Radius: Integer;
 Begin
-    BitMap := TBitmap.Create();
-    BitMap.Height := HPPBox.Height;
-    BitMap.Width := HPPBox.Width;
-
-    HPPBox.Canvas.Brush.Color := RGB(179, 186, 200);
-    HPPBox.Canvas.Pen.Color := RGB(179, 186, 200);
-    HPPBox.Canvas.Pen.Width := 2;
-    Radius := 10;
+    HPPBox.Canvas.Brush.Color := ClBackgroundPen;
+    HPPBox.Canvas.Pen.Color := ClBackgroundPen;
+    HPPBox.Canvas.Pen.Width := PenWidth;
     Rect := HPPBox.ClientRect;
     HPPBox.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right, Rect.Bottom, Radius, Radius);
 
-    HPPBox.Canvas.Brush.Color := RGB(186, 55, 71);
-    HPPBox.Canvas.Pen.Color := RGB(186, 55, 71);
-    HPPBox.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right * User.GetHpPersent Div 100, Rect.Bottom, Radius, Radius);
-
-    BitMap.Free();
+    HPPBox.Canvas.Brush.Color := ClMyRed;
+    HPPBox.Canvas.Pen.Color := ClMyRed;
+    Rect := HPPBox.ClientRect;
+    HPPBox.Canvas.RoundRect(Rect.Left, Rect.Top, Rect.Right * User.GetHpPersent Div High(TPercent), Rect.Bottom, Radius, Radius);
 End;
 
 End.

@@ -3,57 +3,54 @@
 Interface
 
 Uses
-    Winapi.Windows,
-    Winapi.Messages,
     System.SysUtils,
-    System.Variants,
-    System.Classes,
-    Vcl.Graphics,
-    Vcl.Controls,
     Vcl.Forms,
-    Vcl.Dialogs,
     ButtonFrame,
     Vcl.StdCtrls,
-    Vcl.BaseImageCollection,
-    Vcl.ImageCollection,
     Vcl.VirtualImage,
     UserUnit,
     TasksListScreenUnit,
-    DateUtils;
+    DateUtils,
+    Vcl.Controls,
+    System.Classes;
 
 Type
     TSecreteBoxForm = Class(TForm)
         RandomBustImage: TVirtualImage;
-        ImageCollection1: TImageCollection;
         TitleLabel: TLabel;
         OpenButtonFrame: TFrame1;
         Procedure FormCreate(Sender: TObject);
         Procedure SearchRandomBust(Sender: TObject);
     Private
         Function CustomRandom: TUser.TBusts;
+        Function SearchPrice(): Integer;
+        Procedure TreatmentCosts(MiddlePrice: Integer);
     Public
         { Public declarations }
     End;
 
 Type
-    TItems = Array [Low(TUser.TBusts) .. TUser.TBusts.FreeTask] Of TUser.TBusts;
-    TArrOfLabel = Array [0 .. 7] Of TLabel;
+    TItems = Array [Low(TUser.TBusts) .. High(TUser.TBusts)] Of TUser.TBusts;
 
 Var
     SecreteBoxForm: TSecreteBoxForm;
     Costs: TUser.TBustsCost;
-    BustsLabels: TArrOfLabel;
+    BustsLabels: TUser.TArrOfLabel;
     Items: TItems = (TUser.TBusts.HP, TUser.TBusts.XP, TUser.TBusts.HPBust, TUser.TBusts.XPBust, TUser.TBusts.CoinsBust,
-        TUser.TBusts.Tothem, TUser.TBusts.FreeTask);
-    TotalPrice: Int64 = 0;
-    RandomValue: Int64;
+        TUser.TBusts.Tothem, TUser.TBusts.FreeTask, TUser.TBusts.SecretBox);
+    TotalPrice: Integer;
 
 Implementation
 
 {$R *.dfm}
 
+Uses
+    ColorsUnit;
+    
+{ алгоритм поиска случайного значения: "случайный алгоритм" }
 Function TSecreteBoxForm.CustomRandom: TUser.TBusts;
 Var
+    RandomValue: Integer;
     RandomIndex: TUser.TBusts;
 Begin
     RandomValue := Random(TotalPrice) + 1;
@@ -68,39 +65,46 @@ Begin
     Result := RandomIndex;
 End;
 
-Procedure TSecreteBoxForm.FormCreate(Sender: TObject);
+{ высчитывание цены бонусов }
+Function TSecreteBoxForm.SearchPrice(): Integer;
+Var
+    Price: Integer;
+    I: TUser.TBusts;
+Begin
+    Price := 0;
+    For I := Low(TUser.TBusts) To High(TUser.TBusts) Do
+        Price := Price + Costs[I];
+    SearchPrice := Price;
+End;
+
+{ подготовка данных к "случайному алгоритму" }
+Procedure TSecreteBoxForm.TreatmentCosts(MiddlePrice: Integer);
 Var
     I: TUser.TBusts;
-    MiddlePrice: Integer;
 Begin
-    BustsLabels[0] := TaskListForm.HPFrame.CountLabel;
-    BustsLabels[1] := TaskListForm.XPFrame.CountLabel;
-    BustsLabels[2] := TaskListForm.HPBustFrame.CountLabel;
-    BustsLabels[3] := TaskListForm.XPBustFrame.CountLabel;
-    BustsLabels[4] := TaskListForm.CoinsFrame.CountLabel;
-    BustsLabels[5] := TaskListForm.TotemFrame.CountLabel;
-    BustsLabels[6] := TaskListForm.FreeTaskFrame.CountLabel;
-    BustsLabels[7] := TaskListForm.SecretboxFrame.CountLabel;
-    SecreteBoxForm.Color := RGB(202, 205, 221);
-    Costs := User.GetBustsCost();
-    MiddlePrice := 0;
-    For I := Low(TUser.TBusts) To TUser.TBusts.FreeTask Do
-        MiddlePrice := MiddlePrice + Costs[I];
-    MiddlePrice := MiddlePrice Div Ord(TUser.TBusts.FreeTask);
-
-    For I := Low(TUser.TBusts) To TUser.TBusts.FreeTask Do
+    For I := Low(TUser.TBusts) To High(TUser.TBusts) Do
     Begin
         If (Costs[I] > MiddlePrice) Then
             Costs[I] := Costs[I] - (Costs[I] - MiddlePrice) * 2
         Else
             Costs[I] := Costs[I] + (MiddlePrice - Costs[I]) * 2;
     End;
-
-    For I := Low(TUser.TBusts) To TUser.TBusts.FreeTask Do
-        TotalPrice := TotalPrice + Costs[I];
-    RandomValue := UInt64(UInt32(SecondOf(Now)));
 End;
 
+{ инициализация данных }
+Procedure TSecreteBoxForm.FormCreate(Sender: TObject);
+Var
+    MiddlePrice: Integer;
+Begin
+    BustsLabels := User.ArrOfLabel;
+    SecreteBoxForm.Color := ClFont;
+    Costs := User.GetBustsCost();
+    MiddlePrice := SearchPrice Div Ord(TUser.TBusts.FreeTask);
+    TreatmentCosts(MiddlePrice);
+    TotalPrice := SearchPrice;
+End;
+
+{ поиск случайного бонуса }
 Procedure TSecreteBoxForm.SearchRandomBust(Sender: TObject);
 Var
     RandomBust: TUser.TBusts;
@@ -109,6 +113,8 @@ Begin
     RandomBust := CustomRandom();
     RandomBustImage.ImageIndex := Ord(RandomBust);
     User.BuyBust(RandomBust, BustsLabels[Ord(RandomBust)]);
+    User.FCoins := User.FCoins - User.FBustsCost[RandomBust];
+    Dec(User.FBustsBuyCount);
     TempBought := User.BustBought;
     Dec(TempBought[TUser.TBusts.SecretBox]);
     User.BustBought := TempBought;

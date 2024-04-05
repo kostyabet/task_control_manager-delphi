@@ -4,24 +4,9 @@ Interface
 
 Uses
     Winapi.Windows,
-    Winapi.Messages,
     System.SysUtils,
-    System.Variants,
     System.Classes,
     Vcl.Graphics,
-    Vcl.Controls,
-    Vcl.Forms,
-    Vcl.Dialogs,
-    Vcl.ExtCtrls,
-    Vcl.Buttons,
-    System.ImageList,
-    Vcl.ImgList,
-    Vcl.StdCtrls,
-    Vcl.Imaging.Pngimage,
-    Vcl.VirtualImage,
-    Vcl.BaseImageCollection,
-    Vcl.ImageCollection,
-    Vcl.VirtualImageList,
     TaskUnit,
     TaskFrame,
     UserUnit,
@@ -64,12 +49,14 @@ Type
 Implementation
 
 Uses
-    TasksListScreenUnit;
+    TasksListScreenUnit,
+    ColorsUnit;
 
+{ загрузка задач из файл }
 Procedure TListOfTasks.LoadTasksFromFile;
 Var
     NewTask: TTask;
-    Counter, SubTaskCounter, I, J, Complexity, EndJ, EndI: Integer;
+    Counter, SubTaskCounter, I, J, EndJ, EndI: Integer;
 Begin
     TasksInfoFile := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
     Try
@@ -99,13 +86,14 @@ Begin
                 Inc(Counter);
             End;
         Except
-            TaskListForm.ErrorExit('Ошибка при выгрузке данных в файл.');
+            TaskListForm.ErrorExit('Ошибка при выгрузке данных в файл.', 'Загрузка');
         End;
     Finally
         TasksInfoFile.Free;
     End;
 End;
 
+{ сохранение задач в файл }
 Procedure TListOfTasks.SaveTasksInFile;
 Var
     CurentTask: PTasks;
@@ -142,13 +130,14 @@ Begin
                 Inc(Counter);
             End;
         Except
-            TaskListForm.ErrorExit('Ошибка при выгрузке данных в файл.');
+            TaskListForm.ErrorExit('Ошибка при выгрузке данных в файл.', 'Сохранение');
         End;
     Finally
         TasksInfoFile.Free;
     End;
 End;
 
+{ удаление задачи }
 Procedure TListOfTasks.RemoveCurentTask(Index: Integer);
 Var
     CurentTask: PTasks;
@@ -174,9 +163,9 @@ Begin
 
     Dec(FTasksCounter);
     Dispose(CurentTask);
-    CurentTask := Nil;
 End;
 
+{ инициализация данных }
 Constructor TListOfTasks.Create;
 Begin
     New(FHeadTasks);
@@ -187,6 +176,7 @@ Begin
     FTasksCounter := 0;
 End;
 
+{ поиск задачи }
 Function TListOfTasks.SearchCurentTask(Index: Integer): PTasks;
 Var
     ResultTask: PTasks;
@@ -198,22 +188,31 @@ Begin
     SearchCurentTask := ResultTask;
 End;
 
+{ получение индекса сложности задачи }
 Function TListOfTasks.GetComplexityItemValue(CurentTask: PTasks): Integer;
+Const
+    EazyIndex: Integer = 9;
+    MediumIndex: Integer = 10;
+    HardIndex: Integer = 11;
 Var
     ComplexityValue: Integer;
 Begin
     Case CurentTask.Data.GetComplexity(CurentTask.Data) Of
         Easy:
-            ComplexityValue := 4;
+            ComplexityValue := EazyIndex;
         Medium:
-            ComplexityValue := 5;
+            ComplexityValue := MediumIndex;
     Else
-        ComplexityValue := 6;
+        ComplexityValue := HardIndex;
     End;
     GetComplexityItemValue := ComplexityValue;
 End;
 
+{ добавление информации в задачу }
 Procedure TListOfTasks.InputInfoInTask(Var ObjectTask: TTaskOutputFrame; Index: Integer);
+Const
+    MarginLeft: Integer = 10;
+    MarginTop: Integer = 8;
 Var
     CurentTask: PTasks;
 Begin
@@ -228,25 +227,27 @@ Begin
     ObjectTask.HpLabel.Caption := IntToStr(User.GetTaskHP(CurentTask.Data));
     ObjectTask.MoneyLabel.Caption := IntToStr(User.GetTaskMoney(CurentTask.Data));
 
-    ObjectTask.Left := 10;
-    ObjectTask.Top := 8 + Index * (8 + ObjectTask.Height);
+    ObjectTask.Left := MarginLeft;
+    ObjectTask.Top := MarginTop + Index * (MarginTop + ObjectTask.Height);
 End;
 
+{ отрисовка задач }
 Procedure TListOfTasks.DrawTasks(Canvas: TCanvas; Left, Top, Width, Height: Integer);
+Const
+    Radius: Integer = 5;
+    PenWidth: Integer = 0;
 Var
     BufHeadTasks: PTasks;
-    Radius, Counter: Integer;
+    Counter: Integer;
     NewRect: TRect;
     I: Integer;
 Begin
     BufHeadTasks := FHeadTasks.Next;
     Counter := 0;
     NewRect := Rect(Left, Top, Width - Left, Top + Height);
-    Canvas.Brush.Color := Rgb(130, 138, 157);
-    Canvas.Pen.Color := Rgb(130, 138, 157);
-    Radius := 5;
-    Canvas.Brush.Style := BsSolid;
-    Canvas.Pen.Width := 0;
+    Canvas.Brush.Color := ClTasksBackGround;
+    Canvas.Pen.Color := ClTasksBackGround;
+    Canvas.Pen.Width := PenWidth;
     For I := 1 To FTasksCounter Do
     Begin
         Canvas.RoundRect(NewRect.Left, NewRect.Top + Counter * (Height + NewRect.Top), NewRect.Right,
@@ -256,6 +257,7 @@ Begin
     End;
 End;
 
+{ доабвление задачи }
 Procedure TListOfTasks.AddTaskInList(Task: TTask);
 Var
     NewTask: PTasks;
@@ -269,6 +271,7 @@ Begin
     Inc(FTasksCounter);
 End;
 
+{ удаление задачи }
 Destructor TListOfTasks.DestroyTaskList;
 Begin
     FTailTasks := FHeadTasks;

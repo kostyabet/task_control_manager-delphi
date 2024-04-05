@@ -181,6 +181,9 @@ object NewTaskForm: TNewTaskForm
     Top = 96
     Width = 306
     Height = 21
+    CalColors.BackColor = clScrollBar
+    CalColors.TitleTextColor = clMedGray
+    CalColors.MonthBackColor = clMedGray
     Date = 45376.000000000000000000
     Time = 0.923285231481713700
     Color = clWindowFrame

@@ -4,23 +4,13 @@ Interface
 
 Uses
     Winapi.Windows,
-    Winapi.Messages,
-    System.SysUtils,
-    System.Variants,
-    System.Classes,
-    Vcl.Graphics,
-    Vcl.Controls,
     Vcl.Forms,
-    Vcl.Dialogs,
     ButtonFrame,
     Vcl.VirtualImage,
-    Vcl.BaseImageCollection,
-    Vcl.ImageCollection,
-    Vcl.StdCtrls;
+    Vcl.StdCtrls, Vcl.Controls, System.Classes;
 
 Type
     TTaskOutputFrame = Class(TFrame)
-        ImageCollection: TImageCollection;
         BackGroundVImage: TVirtualImage;
         ApplyButtonFrame: TFrame1;
         ExpVImage: TVirtualImage;
@@ -37,7 +27,7 @@ Type
         DeadLineLabel: TLabel;
         AboutLabel: TLabel;
         Procedure ChangeSubTasksFrameClick(Sender: TObject);
-        Procedure DblClick(Sender: TObject);
+        Procedure CustomDblClick(Sender: TObject);
         Procedure ApplyButtonClick(Sender: TObject);
     Private
         Function GetCurentObjectIndex(Sender: TObject): Integer;
@@ -57,6 +47,7 @@ Uses
     TaskUnit,
     UserUnit;
 
+{ поиск нажатой задачи }
 Function TTaskOutputFrame.GetCurentObjectIndex(Sender: TObject): Integer;
 Var
     I, Index: Integer;
@@ -73,7 +64,8 @@ Begin
     GetCurentObjectIndex := Index;
 End;
 
-Procedure TTaskOutputFrame.DblClick(Sender: TObject);
+{ изменение задачи }
+Procedure TTaskOutputFrame.CustomDblClick(Sender: TObject);
 Var
     Complexity: TComplexity;
     Index: Integer;
@@ -84,7 +76,7 @@ Begin
     NewTaskForm.TitleLEdit.Text := NewTask.FTaskData.Title;
     NewTaskForm.DateTPicker.Date := NewTask.FTaskData.Date;
     NewTaskForm.AboutTaskMemo.Text := NewTask.FTaskData.About;
-    NewTaskForm.ComplexityCBox.ItemIndex := TasksList.GetComplexityItemValue(TasksList.SearchCurentTask(Index)) - 4;
+    NewTaskForm.ComplexityCBox.ItemIndex := TasksList.GetComplexityItemValue(TasksList.SearchCurentTask(Index)) - 9;
     NewTaskForm.ShowModal;
     If (ChoosenOpenButton = Info) Then
     Begin
@@ -96,6 +88,7 @@ Begin
     End;
 End;
 
+{ обработка завершения задачи }
 Procedure TTaskOutputFrame.ApplyButtonClick(Sender: TObject);
 Var
     ResultKey, Index: Integer;
@@ -125,6 +118,7 @@ Begin
     End;
 End;
 
+{ обработка нажатия на подзадачи }
 Procedure TTaskOutputFrame.ChangeSubTasksFrameClick(Sender: TObject);
 Var
     Index: Integer;

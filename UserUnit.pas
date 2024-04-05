@@ -2,42 +2,10 @@
 
 Interface
 
-{ .ini настойки приложения } //?????????.ini
-//- музыка
-//- тема
-//- локализация
-
-{ персональная информация } //userinfo.txt
-//- текущий уровень;
-//- кол-во здоровья;
-//- кол-во опыта;
-//- кол-во монет.
-//- массив с кол-вом бонусов
-//- информация о применённых бонусах
-
-{ хранение задач } //tasks.txt
-//- хранить все задачи
-
 Uses
-    Winapi.Windows,
-    Winapi.Messages,
     System.SysUtils,
-    System.Variants,
-    System.Classes,
-    Vcl.Graphics,
-    Vcl.Controls,
     Vcl.Forms,
-    Vcl.Dialogs,
-    Vcl.ExtCtrls,
-    Vcl.Buttons,
-    System.ImageList,
-    Vcl.ImgList,
     Vcl.StdCtrls,
-    Vcl.Imaging.Pngimage,
-    Vcl.VirtualImage,
-    Vcl.BaseImageCollection,
-    Vcl.ImageCollection,
-    Vcl.VirtualImageList,
     TaskUnit;
 
 Type
@@ -45,56 +13,66 @@ Type
 
     TUser = Class
     Const
-        StartXP: Integer = 50;
-        StartHP: Integer = 25;
+        { начальные значения опыта и здоровья }
+        StartXP: Int64 = 50;
+        StartHP: Int64 = 25;
 
-        EazyTaskXP: Integer = 10;
-        EazyTaskHP: Integer = 3;
-        EazyTaskMoney: Integer = 5;
+        { базовые расценки лёгкой задачи }
+        EazyTaskXP: Int64 = 10;
+        EazyTaskHP: Int64 = 3;
+        EazyTaskMoney: Int64 = 5;
 
-        MediumTaskXP: Integer = 15;
-        MediumTaskHP: Integer = 5;
-        MediumTaskMoney: Integer = 7;
+        { базовые расценки средней задачи }
+        MediumTaskXP: Int64 = 15;
+        MediumTaskHP: Int64 = 5;
+        MediumTaskMoney: Int64 = 7;
 
-        HardTaskXP: Integer = 20;
-        HardTaskHP: Integer = 7;
-        HardTaskMoney: Integer = 10;
+        { базовые расценки тяжёлой задачи }
+        HardTaskXP: Int64 = 20;
+        HardTaskHP: Int64 = 7;
+        HardTaskMoney: Int64 = 10;
 
+        { коэфициенты }
         EndTimeKoef: Double = 0.6;
         AwardIncrease: Double = 0.1;
         XPIncrease: Double = 1.1;
         HPIncrease: Double = 1.05;
         CostsIncrease: Double = 1.1;
 
-        HPCost: Integer = 50;
-        XPCost: Integer = 75;
-        HPBustCost: Integer = 20;
-        XPBustCost: Integer = 30;
-        CoinsBustCost: Integer = 20;
-        TothemBustCost: Integer = 100;
-        FreeTaskBust: Integer = 80;
-        SecretBox: Integer = 70;
+        { стартовые цены бонусов }
+        HPCost: Int64 = 50;
+        XPCost: Int64 = 75;
+        HPBustCost: Int64 = 20;
+        XPBustCost: Int64 = 30;
+        CoinsBustCost: Int64 = 20;
+        TothemBustCost: Int64 = 100;
+        FreeTaskBust: Int64 = 80;
+        SecretBox: Int64 = 70;
 
-        HPBonus: Integer = 15;
-        XPBonus: Integer = 20;
-        CoinsBonus: Integer = 5;
+        { расценка бонусов }
+        HPBonus: Int64 = 15;
+        XPBonus: Int64 = 20;
+        CoinsBonus: Int64 = 5;
 
     Type
         TBusts = (HP, XP, HPBust, XPBust, CoinsBust, Tothem, FreeTask, SecretBox);
-        TBustsCost = Array [Low(TBusts) .. High(TBusts)] Of Integer;
-        TBustBought = Array [Low(TBusts) .. High(TBusts)] Of Integer;
+        TArrOfLabel = Array [Ord(TBusts.HP) .. Ord(TBusts.SecretBox)] Of TLabel;
+        TBustsCost = Array [Low(TBusts) .. High(TBusts)] Of Int64;
+        TBustBought = Array [Low(TBusts) .. High(TBusts)] Of Int64;
 
         TUserInfo = Record
-            Lvl: Integer;
-            XP: Integer;
-            HP: Integer;
-            Coins: Integer;
+            Lvl: Int64;
+            XP: Int64;
+            HP: Int64;
+            FNextLvlXP: Int64;
+            FNextLvlHP: Int64;
+            Coins: Int64;
             BustBought: TBustBought;
-            XPBust: Integer;
-            HPBust: Integer;
-            CoinsBust: Integer;
+            XPBust: Int64;
+            HPBust: Int64;
+            CoinsBust: Int64;
             FreeTaskUsed: Boolean;
-            BustsBuyCount: Integer;
+            BustsBuyCount: Int64;
         End;
 
         TUserFile = File Of TUserInfo;
@@ -103,27 +81,34 @@ Type
         UserinfoPath: String = 'userinfo.txt';
 
     Var
-        FCurentLvl: Integer;
-        FXP: Integer;
-        FNextLvlXP: Integer;
-        FHP: Integer;
-        FNextLvlHP: Integer;
-        FCoins: Integer;
+        FArrOfLabel: TArrOfLabel;
+        FCurentLvl: Int64;
+        FXP: Int64;
+        FNextLvlXP: Int64;
+        FHP: Int64;
+        FNextLvlHP: Int64;
+        FCoins: Int64;
         FBustsCost: TBustsCost;
-        FBustsBuyCount: Integer;
+        FBustsBuyCount: Int64;
         FBustBought: TBustBought;
-        FXPBust: Integer;
-        FHPBust: Integer;
-        FCoinsBust: Integer;
+        FXPBust: Int64;
+        FHPBust: Int64;
+        FCoinsBust: Int64;
         FFreeTaskUsed: Boolean;
         FIsTotemUsed: Boolean;
         UserInfoFile: TUserFile;
     Private
-        Function CalculateAwards(Task: TTask; EasyVal, MediumVal, HardVal: Integer): Integer;
-        Function FindCost(StartVal: Integer): Integer;
-        Function SearchCurentValOnLvl(Start: Integer; Increase: Double): Integer;
+        Function CalculateAwards(Task: TTask; EasyVal, MediumVal, HardVal: Int64): Int64;
+        Function SearchCoef(Increase: Double): Double;
+        Function FindCost(StartVal: Int64): Int64;
+        Function SearchCurentValOnLvl(Start: Int64; Increase: Double): Int64;
         Function GetUserInfo(): TUserInfo;
+        Function CheckXP(TempXP: Int64): Int64;
+        Function CheckHP(TempHP: Int64): Int64;
         Procedure InputDataInField(UserInfo: TUserInfo);
+        Procedure CheckBonuses(XP_Val, HP_Val, Coins_Val: Int64; Var TempXP, TempHP: Int64);
+        Procedure CheckUsedBonuses();
+        Procedure InputBoughtBonusesInfo();
         Procedure UseHp;
         Procedure UseXP;
         Procedure UseHPBust;
@@ -131,31 +116,32 @@ Type
         Procedure UseCoinsBust;
         Procedure UseFreeTask;
     Public
-        Function GetTaskMoney(Task: TTask): Integer;
-        Function GetTaskXP(Task: TTask): Integer;
-        Function GetTaskHP(Task: TTask): Integer;
+        Function GetTaskMoney(Task: TTask): Int64;
+        Function GetTaskXP(Task: TTask): Int64;
+        Function GetTaskHP(Task: TTask): Int64;
 
         Function GetHpPersent(): TPercent;
         Function GetXpPersent(): TPercent;
         Function GetBustsCost(): TBustsCost;
         Procedure UseBust(TypeOfBust: TBusts; CountLabel: TLabel);
 
-        Procedure ApplyNewTask(XP_Val, HP_Val, Coins_Val: Integer);
+        Procedure ApplyNewTask(XP_Val, HP_Val, Coins_Val: Int64);
         Procedure BuyBust(TypeOfBust: TBusts; CountLabel: TLabel);
         Procedure SaveUserDataInFile;
         Procedure LoadUserDataFromFile;
 
-        Function IsCanBuy(ItemCost: Integer): Boolean;
+        Function IsCanBuy(ItemCost: Int64): Boolean;
 
-        Property CurentLvl: Integer Read FCurentLvl;
-        Property Coins: Integer Read FCoins;
-        Property HP: Integer Read FHP;
-        Property XP: Integer Read FXP;
-        Property MaxHP: Integer Read FNextLvlHP;
-        Property MaxXP: Integer Read FNextLvlXP;
+        Property CurentLvl: Int64 Read FCurentLvl;
+        Property Coins: Int64 Read FCoins;
+        Property HP: Int64 Read FHP;
+        Property XP: Int64 Read FXP;
+        Property MaxHP: Int64 Read FNextLvlHP;
+        Property MaxXP: Int64 Read FNextLvlXP;
         Property BustBought: TBustBought Read FBustBought Write FBustBought;
         Property FreeTaskUsed: Boolean Read FFreeTaskUsed Write FFreeTaskUsed;
         Property IsTotemUsed: Boolean Read FIsTotemUsed Write FIsTotemUsed;
+        Property ArrOfLabel: TArrOfLabel Read FArrOfLabel;
         Constructor Create;
     End;
 
@@ -163,8 +149,10 @@ Implementation
 
 Uses
     TasksListScreenUnit,
-    SecretBoxUnit;
+    SecretBoxUnit,
+    ColorsUnit;
 
+{ использование бутелька здоровья }
 Procedure TUser.UseHp();
 Begin
     FHP := FHP + HPBonus;
@@ -172,6 +160,7 @@ Begin
         FHP := FNextLvlHP;
 End;
 
+{ использование бутелька опыта }
 Procedure TUser.UseXP();
 Begin
     FXP := FXP + XPBonus;
@@ -185,47 +174,56 @@ Begin
     End;
 End;
 
-Procedure TUser.UseHPBust;
+{ поиск текущего коэфициента }
+Function TUser.SearchCoef(Increase: Double): Double;
 Var
+    Coef: Double;
     I: Integer;
-    Coef: Real;
 Begin
     Coef := 1;
     For I := 1 To FCurentLvl Do
-        Coef := Coef + Coef * AwardIncrease;
+        Coef := Coef + Coef * Increase;
+
+    SearchCoef := Coef;
+End;
+
+{ использование бонуса на повышение здоровья }
+Procedure TUser.UseHPBust;
+Var
+    Coef: Real;
+Begin
+    Coef := SearchCoef(AwardIncrease);
 
     FHPBust := FHPBust + Trunc(HPBonus * Coef);
 End;
 
+{ использование бонуса на повышение опыта }
 Procedure TUser.UseXPBust;
 Var
-    I: Integer;
     Coef: Real;
 Begin
-    Coef := 1;
-    For I := 1 To FCurentLvl Do
-        Coef := Coef + Coef * AwardIncrease;
+    Coef := SearchCoef(AwardIncrease);
 
     FXPBust := FXPBust + Trunc(XPBonus * Coef);
 End;
 
+{ использование бонуса на повышение здоровья }
 Procedure TUser.UseCoinsBust;
 Var
-    I: Integer;
     Coef: Real;
 Begin
-    Coef := 1;
-    For I := 1 To FCurentLvl Do
-        Coef := Coef + Coef * AwardIncrease;
+    Coef := SearchCoef(AwardIncrease);
 
     FCoinsBust := FCoinsBust + Trunc(CoinsBonus * Coef);
 End;
 
+{ использование бонуса обнуления просроченой задачи }
 Procedure TUser.UseFreeTask();
 Begin
     FFreeTaskUsed := True;
 End;
 
+{ процедура распределения выбранного бонуса }
 Procedure TUser.UseBust(TypeOfBust: TBusts; CountLabel: TLabel);
 Begin
     Case TypeOfBust Of
@@ -259,10 +257,6 @@ Begin
                 TaskListForm.ShowCoinsBustVImage.Hint := '+' + IntToStr(FCoinsBust) +
                     ' к монетам: бонус примениться при завершении любой задачи.';
             End;
-        TBusts.Tothem:
-            Begin
-
-            End;
         TBusts.FreeTask:
             Begin
                 UseFreeTask;
@@ -280,14 +274,16 @@ Begin
     TaskListForm.ChangeBustsCounter(CountLabel, TypeOfBust);
 End;
 
-Function TUser.IsCanBuy(ItemCost: Integer): Boolean;
+{ проверка на возможность покупки }
+Function TUser.IsCanBuy(ItemCost: Int64): Boolean;
 Begin
     IsCanBuy := FCoins >= ItemCost;
 End;
 
-Function TUser.SearchCurentValOnLvl(Start: Integer; Increase: Double): Integer;
+{ высчитывание необходимого значения по характеристикам }
+Function TUser.SearchCurentValOnLvl(Start: Int64; Increase: Double): Int64;
 Var
-    I: Integer;
+    I: Int64;
     Val: Double;
 Begin
     Val := Start;
@@ -297,10 +293,20 @@ Begin
     SearchCurentValOnLvl := Trunc(Val);
 End;
 
+{ инициализация через конструктор }
 Constructor TUser.Create;
-Var
-    I: TBusts;
 Begin
+    { инициализация массива frame-ов о бонусах }
+    FArrOfLabel[0] := TaskListForm.HPFrame.CountLabel;
+    FArrOfLabel[1] := TaskListForm.XPFrame.CountLabel;
+    FArrOfLabel[2] := TaskListForm.HPBustFrame.CountLabel;
+    FArrOfLabel[3] := TaskListForm.XPBustFrame.CountLabel;
+    FArrOfLabel[4] := TaskListForm.CoinsFrame.CountLabel;
+    FArrOfLabel[5] := TaskListForm.TotemFrame.CountLabel;
+    FArrOfLabel[6] := TaskListForm.FreeTaskFrame.CountLabel;
+    FArrOfLabel[7] := TaskListForm.SecretboxFrame.CountLabel;
+
+    { инициализация необходимых базовых переменных }
     FCurentLvl := 1;
     FNextLvlXP := SearchCurentValOnLvl(StartXP, XPIncrease);
     FXP := 0;
@@ -313,10 +319,9 @@ Begin
     FCoinsBust := 0;
     FFreeTaskUsed := False;
     FIsTotemUsed := False;
-    For I := Low(TUser.TBusts) To High(TUser.TBusts) Do
-        FBustBought[I] := 0;
 End;
 
+{ покупка бонуса }
 Procedure TUser.BuyBust(TypeOfBust: TBusts; CountLabel: TLabel);
 Begin
     Inc(FBustBought[TypeOfBust]);
@@ -325,9 +330,10 @@ Begin
     TaskListForm.ChangeBustsCounter(CountLabel, TypeOfBust);
 End;
 
-Function TUser.FindCost(StartVal: Integer): Integer;
+{ поиск цены }
+Function TUser.FindCost(StartVal: Int64): Int64;
 Var
-    I: Integer;
+    I: Int64;
     ResVal: Double;
 Begin
     ResVal := StartVal;
@@ -336,6 +342,7 @@ Begin
     FindCost := Trunc(ResVal);
 End;
 
+{ функция получения всех цен бонусов }
 Function TUser.GetBustsCost: TUser.TBustsCost;
 Begin
     FBustsCost[TBusts.HP] := FindCost(HPCost);
@@ -350,16 +357,15 @@ Begin
     GetBustsCost := FBustsCost;
 End;
 
-Function TUser.CalculateAwards(Task: TTask; EasyVal, MediumVal, HardVal: Integer): Integer;
+{ функция расчитывания цены задачи }
+Function TUser.CalculateAwards(Task: TTask; EasyVal, MediumVal, HardVal: Int64): Int64;
 Var
-    I: Integer;
     Coef, ResVal: Real;
     CurentDate: TDate;
 Begin
-    Coef := 1;
-    For I := 1 To FCurentLvl Do
-        Coef := Coef + Coef * AwardIncrease;
+    Coef := SearchCoef(AwardIncrease);
 
+    { разветвление в зависимости от сложности }
     Case Task.FTaskData.Complexity Of
         Easy:
             ResVal := EasyVal * Coef;
@@ -368,6 +374,8 @@ Begin
     Else
         ResVal := HardVal * Coef;
     End;
+
+    { проверка задачи по сроку выполнения }
     CurentDate := Date + EncodeTime(0, 0, 0, 0);
     If (Task.FTaskData.Date < CurentDate) Then
         ResVal := -1 * (ResVal / 2);
@@ -375,37 +383,39 @@ Begin
     CalculateAwards := Trunc(ResVal);
 End;
 
-Function TUser.GetTaskMoney(Task: TTask): Integer;
+{ получения текущих монет }
+Function TUser.GetTaskMoney(Task: TTask): Int64;
 Begin
     GetTaskMoney := CalculateAwards(Task, EazyTaskMoney, MediumTaskMoney, HardTaskMoney);
 End;
 
-Function TUser.GetTaskXP(Task: TTask): Integer;
+{ получения текущего опыта }
+Function TUser.GetTaskXP(Task: TTask): Int64;
 Begin
     GetTaskXP := CalculateAwards(Task, EazyTaskXP, MediumTaskXP, HardTaskXP);
 End;
 
-Function TUser.GetTaskHP(Task: TTask): Integer;
+{ получения текущего здоровья }
+Function TUser.GetTaskHP(Task: TTask): Int64;
 Begin
     GetTaskHP := CalculateAwards(Task, EazyTaskHP, MediumTaskHP, HardTaskHP);
 End;
 
+{ получение процентного соотношения здоровья }
 Function TUser.GetHpPersent: TPercent;
 Begin
     GetHpPersent := Trunc((FHP / FNextLvlHP) * 100);
 End;
 
+{ получение процентного соотношения опыта }
 Function TUser.GetXpPersent: TPercent;
 Begin
     GetXpPersent := Trunc((FXP / FNextLvlXP) * 100);
 End;
 
-Procedure TUser.ApplyNewTask(XP_Val, HP_Val, Coins_Val: Integer);
-Var
-    TempHp, TempXp: Integer;
+{ проверка на использование бонуса }
+Procedure TUser.CheckBonuses(XP_Val, HP_Val, Coins_Val: Int64; Var TempXP, TempHP: Int64);
 Begin
-    TempXP := FXP;
-    TempHP := FHP;
     If Not(FFreeTaskUsed And (Coins_Val < 0) And (XP_Val < 0) And (HP_Val < 0)) Then
     Begin
         FCoins := FCoins + Coins_Val + FCoinsBust;
@@ -422,66 +432,70 @@ Begin
         TempHp := FHP + HP_Val * (-1) + FHPBust;
         FIsTotemUsed := True;
     End;
+End;
 
-    If FCoins < 0 Then
-        FCoins := 0;
-
-    While (TempXP > FNextLvlXP) Do
+{ рассчитывание нового опыта }
+Function TUser.CheckXP(TempXP: Int64): Int64;
+Begin
+    While (TempXP >= FNextLvlXP) Do
     Begin
         TempXp := TempXp - FNextLvlXP;
         FNextLvlXP := Trunc(XPIncrease * FNextLvlXP);
         FNextLvlHP := Trunc(HPIncrease * FNextLvlHP);
         Inc(FCurentLvl);
     End;
-    If (TempXP < 0) Then
-        TempXP := 0;
-    FXP := TempXp;
 
+    TempXP := Ord(Not(TempXP < 0)) * TempXP;
+
+    CheckXP := TempXP;
+End;
+
+{ рассчитывание нового здоровья }
+Function TUser.CheckHP(TempHP: Int64): Int64;
+Var
+    Res: Int64;
+Begin
     If (TempHP > FNextLvlHP) Then
-        FHP := FNextLvlHP
+        Res := FNextLvlHP
     Else
         If (TempHp < 0) Then
         Begin
             FNextLvlXP := Trunc(FNextLvlXP / XPIncrease);
             FXP := (FNextLvlXP * 2) Div 3;
             FNextLvlHP := Trunc(FNextLvlHP / HPIncrease);
-            FHP := (FNextLvlHp * 2) Div 3;
+            Res := (FNextLvlHp * 2) Div 3;
             Dec(FCurentLvl);
         End
         Else
-            FHP := TempHp;
+            Res := TempHp;
 
+    CheckHP := Res;
+End;
+
+{ применение новой задачи }
+Procedure TUser.ApplyNewTask(XP_Val, HP_Val, Coins_Val: Int64);
+Var
+    TempHp, TempXp: Int64;
+Begin
+    TempXP := FXP;
+    TempHP := FHP;
+    CheckBonuses(XP_Val, HP_Val, Coins_Val, TempXP, TempHP);
+
+    FCoins := Ord(Not(FCoins < 0)) * FCoins;
+
+    FXP := CheckXP(TempXp);
+
+    FHP := CheckHP(TempHp);
+
+    { обнуление бонусов }
     FHPBust := 0;
     FXPBust := 0;
     FCoinsBust := 0;
 End;
 
-Procedure TUser.InputDataInField(UserInfo: TUserInfo);
-Type
-    TArrOfLabel = Array [0 .. 7] Of TLabel;
-Var
-    BustsLabels: TArrOfLabel;
-    I: TUser.TBusts;
-    J: Integer;
+{ заполнение информации об активированных бонусах }
+Procedure TUser.CheckUsedBonuses();
 Begin
-    BustsLabels[0] := TaskListForm.HPFrame.CountLabel;
-    BustsLabels[1] := TaskListForm.XPFrame.CountLabel;
-    BustsLabels[2] := TaskListForm.HPBustFrame.CountLabel;
-    BustsLabels[3] := TaskListForm.XPBustFrame.CountLabel;
-    BustsLabels[4] := TaskListForm.CoinsFrame.CountLabel;
-    BustsLabels[5] := TaskListForm.TotemFrame.CountLabel;
-    BustsLabels[6] := TaskListForm.FreeTaskFrame.CountLabel;
-    BustsLabels[7] := TaskListForm.SecretboxFrame.CountLabel;
-
-    FCurentLvl := UserInfo.Lvl;
-    FXP := UserInfo.XP;
-    FHP := UserInfo.HP;
-    FCoins := UserInfo.Coins;
-    FBustBought := UserInfo.BustBought;
-    ApplyNewTask(UserInfo.XPBust, UserInfo.HPBust, UserInfo.CoinsBust);
-    FFreeTaskUsed := UserInfo.FreeTaskUsed;
-    FBustsBuyCount := UserInfo.BustsBuyCount;
-
     If (FFreeTaskUsed) Then
     Begin
         TaskListForm.FreeTaskVImage.Visible := True;
@@ -505,15 +519,43 @@ Begin
         TaskListForm.ShowXPBustVImage.Visible := True;
         TaskListForm.ShowXPBustVImage.Hint := '+' + IntToStr(FXPBust) + ' к опыту: бонус примениться при завершении любой задачи.';
     End;
+End;
 
-    For I := Low(TUser.TBusts) To High(TUser.TBusts) Do
+{ заполенение информации о купленых бонусах }
+Procedure TUser.InputBoughtBonusesInfo();
+Var
+    I: TUser.TBusts;
+    J: Integer;
+Begin
+    For I := Low(TBusts) To High(TBusts) Do
         For J := 1 To FBustBought[I] Do
         Begin
             FBustBought[I] := FBustBought[I] - 1;
-            User.BuyBust(I, BustsLabels[Ord(I)]);
+            User.BuyBust(I, FArrOfLabel[Ord(I)]);
         End;
 End;
 
+{ заполнение информации полученной из файла }
+Procedure TUser.InputDataInField(UserInfo: TUserInfo);
+Begin
+    FCurentLvl := UserInfo.Lvl;
+    FXP := UserInfo.XP;
+    FHP := UserInfo.HP;
+    FNextLvlXP := UserInfo.FNextLvlXP;
+    FNextLvlHP := UserInfo.FNextLvlHP;
+    FCoins := UserInfo.Coins;
+    FBustBought := UserInfo.BustBought;
+    ApplyNewTask(0, 0, 0);
+    FXPBust := UserInfo.XPBust;
+    FHPBust := UserInfo.HPBust;
+    FCoinsBust := UserInfo.CoinsBust;
+    FFreeTaskUsed := UserInfo.FreeTaskUsed;
+    FBustsBuyCount := UserInfo.BustsBuyCount;
+    CheckUsedBonuses;
+    InputBoughtBonusesInfo;
+End;
+
+{ получение пользовательской информации }
 Function TUser.GetUserInfo(): TUserInfo;
 Var
     UserInfo: TUserInfo;
@@ -521,6 +563,8 @@ Begin
     UserInfo.Lvl := FCurentLvl;
     UserInfo.XP := FXP;
     UserInfo.HP := FHP;
+    UserInfo.FNextLvlXP := FNextLvlXP;
+    UserInfo.FNextLvlHP := FNextLvlHP;
     UserInfo.Coins := FCoins;
     UserInfo.BustBought := FBustBought;
     UserInfo.XPBust := FXPBust;
@@ -532,6 +576,7 @@ Begin
     GetUserInfo := UserInfo;
 End;
 
+{ загрузка данных пользователя из файла }
 Procedure TUser.LoadUserDataFromFile;
 Var
     UserInfo: TUserInfo;
@@ -547,7 +592,7 @@ Begin
                 Read(UserInfoFile, UserInfo);
                 InputDataInField(UserInfo);
             Except
-                TaskListForm.ErrorExit('Ошибка при загрузке данных из файла.');
+                TaskListForm.ErrorExit('Ошибка при загрузке данных из файла.', 'Загрузка');
                 Rewrite(UserInfoFile);
             End;
         Finally
@@ -556,6 +601,7 @@ Begin
     End;
 End;
 
+{ загрузка данных пользователя в файла }
 Procedure TUser.SaveUserDataInFile;
 Var
     UserInfo: TUserInfo;
@@ -567,7 +613,7 @@ Begin
         Try
             Write(UserInfoFile, UserInfo);
         Except
-            TaskListForm.ErrorExit('Ошибка при выгрузке данных в файл.');
+            TaskListForm.ErrorExit('Ошибка при выгрузке данных в файл.', 'Сохранение');
         End;
     Finally
         Close(UserInfoFile);

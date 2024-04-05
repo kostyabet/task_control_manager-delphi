@@ -1,21 +1,15 @@
-Unit ChangeDataUnit;
+﻿Unit ChangeDataUnit;
 
 Interface
 
 Uses
-    Winapi.Windows,
-    Winapi.Messages,
-    System.SysUtils,
-    System.Variants,
-    System.Classes,
-    Vcl.Graphics,
-    Vcl.Controls,
     Vcl.Forms,
-    Vcl.Dialogs,
     Vcl.StdCtrls,
-    Vcl.Mask,
     Vcl.ExtCtrls,
-    ButtonFrame;
+    ButtonFrame,
+    Vcl.Controls,
+    Vcl.Mask,
+    System.Classes;
 
 Type
     TChangeDataForm = Class(TForm)
@@ -41,27 +35,35 @@ Implementation
 {$R *.dfm}
 
 Uses
-    ViewControllerUnit, NewTaskUnit;
+    ViewControllerUnit,
+    NewTaskUnit,
+    UserUnit,
+    ColorsUnit;
 
+{ подтверждение изменений }
 Procedure TChangeDataForm.ApplyButtonFrameClick(Sender: TObject);
 Begin
     Changes := True;
     ChangeDataForm.Close;
 End;
 
+{ стартовые настройки формы }
 Procedure TChangeDataForm.FormCreate(Sender: TObject);
 Begin
-    ChangeDataForm.Color := Rgb(202, 205, 221);
-    SubTaskLabel.Font.Color := Rgb(38, 43, 50);
-    SubTitleLenLabel.Font.Color := Rgb(38, 43, 50);
-    SubTitleLEdit.Font.Color := Rgb(38, 43, 50);
-
+    { настройка цветов }
+    ChangeDataForm.Color := ClFont;
+    SubTaskLabel.Font.Color := ClText;
+    SubTitleLenLabel.Font.Color := ClText;
+    SubTitleLEdit.Font.Color := ClText;
+    { "зануление" надписи у TLabeledEdit }
     SubTitleLEdit.EditLabel.Caption := '';
 End;
 
+{ контроль ввода }
 Procedure TChangeDataForm.SubTitleLEditChange(Sender: TObject);
 Begin
-    NewTaskForm.ChangeEditShortText(SubTitleLenLabel, SubTitleLEdit);
+    NewTaskForm.ChangeEditShortText(SubTitleLenLabel, SubTitleLEdit.Text, SubTitleLEdit.MaxLength, SubTitleLEdit.Left, SubTitleLEdit.Top,
+        SubTitleLEdit.Width);
 End;
 
 End.
