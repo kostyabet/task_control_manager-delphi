@@ -68,6 +68,7 @@ Type
         Procedure FormDestroy(Sender: TObject);
         Procedure CheckTaskTime(Sender: TObject);
         Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
+        Function FormHelp(Command: Word; Data: NativeInt; Var CallHelp: Boolean): Boolean;
     Private
 
     Public
@@ -284,6 +285,12 @@ Begin
     TasksList.SaveTasksInFile;
     User.Destroy;
     TasksList.DestroyTaskList;
+End;
+
+Function TTaskListForm.FormHelp(Command: Word; Data: NativeInt; Var CallHelp: Boolean): Boolean;
+Begin
+    CallHelp := False;
+    FormHelp := False;
 End;
 
 { нажатие на кнопку магазина }

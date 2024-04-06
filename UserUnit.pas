@@ -458,7 +458,7 @@ Begin
     If (TempHP > FNextLvlHP) Then
         Res := FNextLvlHP
     Else
-        If (TempHp < 0) Then
+        If (TempHp < 0) And (CurentLvl > 1) Then
         Begin
             FNextLvlXP := Trunc(FNextLvlXP / XPIncrease);
             FXP := (FNextLvlXP * 2) Div 3;
@@ -467,7 +467,10 @@ Begin
             Dec(FCurentLvl);
         End
         Else
-            Res := TempHp;
+            If (CurentLvl = 1) Then
+                Res := 0
+            Else
+                Res := TempHp;
 
     CheckHP := Res;
 End;

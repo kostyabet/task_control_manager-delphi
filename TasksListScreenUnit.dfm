@@ -18,6 +18,7 @@ object TaskListForm: TTaskListForm
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnHelp = FormHelp
   TextHeight = 15
   object MenuBackGround: TPaintBox
     Left = 20
