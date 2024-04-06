@@ -41,6 +41,7 @@ Type
     VirtualImage9: TVirtualImage;
     VirtualImage10: TVirtualImage;
     VirtualImage11: TVirtualImage;
+    EndLabel: TLabel;
     procedure InstractionFontPBoxPaint(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     Private
@@ -71,7 +72,10 @@ begin
     AboutBonusesLabel.Caption := 'По наведению курсора на бонус вам выпадет подсказка о том, что этот бонус делает.';
     AnotherLabel.Caption := 'Дополнительные возможности:'#13#10 +
     '   - По двойному нажатию на задачу вы откроете редактирование задачи;'#13#10 +
-    '   - По наведению на любой бонус вы получите подсказку о том, что он делает;';
+    '   - По наведению на любой бонус вы получите подсказку о том, что он делает;'#13#10 +
+    'От уровня к уровню ваши показатели будут рости. Если ваше здоровье будет меньше 0, то ваш уровень понизится на 1-ну позицию.';
+    EndLabel.Caption := 'Помните. Это приложение нацелено на самодисциплину пользователя. Мы стимулируем вашу мотивацию к выполнению задач добавляя игро-'#13#10 +
+    'вой момент и стримимся это сделать так, как того требуют текущие тренды. Приятного Вам использования!!!';
 end;
 
 procedure TInstractionForm.InstractionFontPBoxPaint(Sender: TObject);

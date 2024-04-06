@@ -1,8 +1,9 @@
 object InstractionForm: TInstractionForm
   Left = 0
   Top = 0
+  BorderStyle = bsSingle
   Caption = 'InstractionForm'
-  ClientHeight = 311
+  ClientHeight = 364
   ClientWidth = 855
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,7 +18,7 @@ object InstractionForm: TInstractionForm
     Left = 8
     Top = 8
     Width = 834
-    Height = 289
+    Height = 345
     OnPaint = InstractionFontPBoxPaint
   end
   object HeadLineLabel: TLabel
@@ -297,5 +298,12 @@ object InstractionForm: TInstractionForm
     ImageHeight = 0
     ImageIndex = 11
     ImageName = 'HighComplexity'
+  end
+  object EndLabel: TLabel
+    Left = 20
+    Top = 312
+    Width = 48
+    Height = 15
+    Caption = 'EndLabel'
   end
 end

@@ -21,6 +21,7 @@ object StoreForm: TStoreForm
     Top = 15
     Width = 89
     Height = 25
+    Hint = #1052#1072#1075#1072#1079#1080#1085' :)'
     Caption = #1052#1040#1043#1040#1047#1048#1053
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -28,6 +29,8 @@ object StoreForm: TStoreForm
     Font.Name = 'Segoe UI'
     Font.Style = [fsBold]
     ParentFont = False
+    ParentShowHint = False
+    ShowHint = True
   end
   object StoreFontPBox: TPaintBox
     Left = 15
@@ -54,11 +57,14 @@ object StoreForm: TStoreForm
     Top = 79
     Width = 60
     Height = 85
+    Hint = #1041#1091#1090#1099#1083#1105#1082' '#1079#1076#1086#1088#1086#1074#1100#1103'. '#1052#1086#1084#1077#1085#1090#1072#1083#1100#1085#1086' '#1091#1074#1077#1083#1080#1095#1080#1090' '#1074#1072#1096#1077' '#1079#1076#1086#1088#1086#1074#1100#1077'.'
     ImageCollection = TaskListForm.IconsImgCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 0
     ImageName = 'HEALTHBUFF'
+    ParentShowHint = False
+    ShowHint = True
   end
   object BackGroundTothem: TVirtualImage
     Left = 167
@@ -81,6 +87,8 @@ object StoreForm: TStoreForm
     ImageHeight = 0
     ImageIndex = 5
     ImageName = 'TOTEM'
+    ParentShowHint = False
+    ShowHint = True
   end
   object BackGroundHPBust: TVirtualImage
     Left = 284
@@ -153,22 +161,30 @@ object StoreForm: TStoreForm
     Top = 223
     Width = 60
     Height = 85
+    Hint = 
+      #1050#1072#1088#1090#1086#1095#1082#1072' '#1084#1086#1085#1077#1090'. '#1055#1088#1080' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1080' '#1085#1086#1074#1086#1081' '#1079#1072#1076#1072#1095#1080' '#1074#1072#1096#1080' '#1084#1086#1085#1077#1090#1099' '#1091#1074#1077#1083#1080#1095#1072#1090 +
+      #1089#1103'.'
     ImageCollection = TaskListForm.IconsImgCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 4
     ImageName = 'MONEYTICKET'
+    ParentShowHint = False
+    ShowHint = True
   end
   object FreeXP: TVirtualImage
     Left = 176
     Top = 79
     Width = 60
     Height = 85
+    Hint = #1041#1091#1090#1099#1083#1105#1082' '#1086#1087#1099#1090#1072'. '#1052#1086#1084#1077#1085#1090#1072#1083#1100#1085#1086' '#1091#1074#1077#1083#1080#1095#1080#1090' '#1074#1072#1096' '#1086#1087#1099#1090'.'
     ImageCollection = TaskListForm.IconsImgCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 1
     ImageName = 'EXPBUFF'
+    ParentShowHint = False
+    ShowHint = True
   end
   object FreeTaskBust: TVirtualImage
     Left = 293
@@ -180,17 +196,24 @@ object StoreForm: TStoreForm
     ImageHeight = 0
     ImageIndex = 6
     ImageName = 'FREETASK'
+    ParentShowHint = False
+    ShowHint = True
   end
   object FreeHPBust: TVirtualImage
     Left = 293
     Top = 79
     Width = 60
     Height = 85
+    Hint = 
+      #1050#1072#1088#1090#1086#1095#1082#1072' '#1079#1076#1086#1088#1086#1074#1100#1103'. '#1055#1088#1080' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1080' '#1085#1086#1074#1086#1081' '#1079#1072#1076#1072#1095#1080' '#1074#1072#1096#1077' '#1079#1076#1086#1088#1086#1074#1100#1077' '#1091#1074#1077 +
+      #1083#1080#1095#1080#1090#1089#1103'.'
     ImageCollection = TaskListForm.IconsImgCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 2
     ImageName = 'HPTICKET'
+    ParentShowHint = False
+    ShowHint = True
   end
   object SecretBox: TVirtualImage
     Left = 409
@@ -202,35 +225,46 @@ object StoreForm: TStoreForm
     ImageHeight = 0
     ImageIndex = 7
     ImageName = 'SECRETBOX'
+    ParentShowHint = False
+    ShowHint = True
   end
   object FreeXPBust: TVirtualImage
     Left = 409
     Top = 79
     Width = 60
     Height = 85
+    Hint = #1050#1072#1088#1090#1086#1095#1082#1072' '#1086#1087#1099#1090#1072'. '#1055#1088#1080' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1080' '#1085#1086#1074#1086#1081' '#1079#1072#1076#1072#1095#1080' '#1074#1072#1096' '#1086#1087#1099#1090' '#1091#1074#1077#1083#1080#1095#1080#1090#1089#1103'.'
     ImageCollection = TaskListForm.IconsImgCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 3
     ImageName = 'XPTICKET'
+    ParentShowHint = False
+    ShowHint = True
   end
   object CoinsLabel: TLabel
     Left = 43
-    Top = 31
+    Top = 30
     Width = 6
     Height = 15
+    Hint = #1050#1086#1083'-'#1074#1086' '#1074#1072#1096#1080#1093' '#1084#1086#1085#1077#1090'.'
     Caption = '0'
+    ParentShowHint = False
+    ShowHint = True
   end
   object CoinsImage: TVirtualImage
     Left = 22
     Top = 31
     Width = 15
     Height = 15
+    Hint = #1052#1086#1085#1077#1090#1099'.'
     ImageCollection = TaskListForm.IconsImgCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 8
     ImageName = 'koin'
+    ParentShowHint = False
+    ShowHint = True
   end
   inline HPBustFrame: TFrame1
     Left = 284

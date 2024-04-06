@@ -100,7 +100,8 @@ Uses
     SettingsUnit,
     InstractionUnit,
     ProfileUnit,
-    ColorsUnit;
+    ColorsUnit,
+    LoadingScreenUnit;
 
 { информация о количестве бонуса }
 Procedure TTaskListForm.ChangeBustsCounter(CountLabel: TLabel; TypeOfBust: TUser.TBusts);
@@ -167,6 +168,7 @@ Begin
     For I := Low(FArrayOfBlocks) To High(FArrayOfBlocks) Do
         If (I <> Index) Then
         Begin
+            FArrayOfBlocks[I].Name := 'Frame' + IntToStr(I - Ord(I > Index));
             TempArr[I - Ord(I > Index)] := FArrayOfBlocks[I];
             TempArr[I - Ord(I > Index)].Top := DefMargin + (I - Ord(I > Index)) * (DefMargin + TempArr[I - Ord(I > Index)].Height);
         End
@@ -182,9 +184,9 @@ Var
     LeftBorder: Integer;
 Begin
     XPBoxPaint(TaskListForm.XPBox);
-    XPBox.Hint := 'опыт: ' + IntToStr(User.XP) + '/' + IntToStr(User.MaxXP);
+    XPBox.Hint := 'Опыт: ' + IntToStr(User.XP) + '/' + IntToStr(User.MaxXP);
     HPPBoxPaint(TaskListForm.HPPBox);
-    HPPBox.Hint := 'здоровье: ' + IntToStr(User.HP) + '/' + IntToStr(User.MaxHP);
+    HPPBox.Hint := 'доровье: ' + IntToStr(User.HP) + '/' + IntToStr(User.MaxHP);
     LeftBorder := LvlLabel.Left + LvlLabel.Width;
     LvlLabel.Caption := IntToStr(User.CurentLvl);
     LvlLabel.Left := LeftBorder - LvlLabel.Width;
@@ -267,6 +269,12 @@ Begin
     UpDateUserInfo;
     TaskListForm.UpDateUserInfo;
     TaskListForm.Color := ClFont;
+    TotemFrame.BustVImage.Hint :=
+        'Тотем. Возвращает все бонусы просроченой задачи в норму.'#13#10'Применяется автоматически при выполнении просроченой задачи.';
+    FreeTaskFrame.BustVImage.Hint :=
+        'Бесплатная задача. Зануляет все бонусы просроченой задачи в норму.'#13#10'Применяется автоматически при выполнении просроченой задачи.';
+    SecretBoxFrame.BustVImage.Hint :=
+        'Секретный сундучок. Вы получите рандомный бонус из 8-ми.'#13#10'Шанс скоррестирован относительно цен.';
 End;
 
 { очистка данных при закрытии }

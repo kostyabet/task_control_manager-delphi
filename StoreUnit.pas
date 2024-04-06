@@ -10,7 +10,9 @@ Uses
     Vcl.ExtCtrls,
     Vcl.VirtualImage,
     ButtonFrame,
-    UserUnit, Vcl.Controls, System.Classes;
+    UserUnit,
+    Vcl.Controls,
+    System.Classes;
 
 Type
     TStoreForm = Class(TForm)
@@ -96,35 +98,42 @@ End;
 
 { обработка попытки купить бонус }
 Procedure TStoreForm.ButtonFrameBuyClick(Sender: TObject);
+Var
+    ResultKey: Integer;
 Begin
-    If (Sender = HPFrame.ButtonText) Or (Sender = HPFrame.BackGroundVirtmage) Then
-        User.BuyBust(TUser.TBusts.HP, TaskListForm.HPFrame.CountLabel);
+    ResultKey := Application.Messagebox('Вы уверены, что хотите купить бонус?', 'Покупка бонуса',
+        MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2);
+    If (ResultKey = ID_YES) Then
+    Begin
+        If (Sender = HPFrame.ButtonText) Or (Sender = HPFrame.BackGroundVirtmage) Then
+            User.BuyBust(TUser.TBusts.HP, TaskListForm.HPFrame.CountLabel);
 
-    If (Sender = XPFrame.ButtonText) Or (Sender = XPFrame.BackGroundVirtmage) Then
-        User.BuyBust(TUser.TBusts.XP, TaskListForm.XPFrame.CountLabel);
+        If (Sender = XPFrame.ButtonText) Or (Sender = XPFrame.BackGroundVirtmage) Then
+            User.BuyBust(TUser.TBusts.XP, TaskListForm.XPFrame.CountLabel);
 
-    If (Sender = HPBustFrame.ButtonText) Or (Sender = HPBustFrame.BackGroundVirtmage) Then
-        User.BuyBust(TUser.TBusts.HPBust, TaskListForm.HPBustFrame.CountLabel);
+        If (Sender = HPBustFrame.ButtonText) Or (Sender = HPBustFrame.BackGroundVirtmage) Then
+            User.BuyBust(TUser.TBusts.HPBust, TaskListForm.HPBustFrame.CountLabel);
 
-    If (Sender = XPBustFrame.ButtonText) Or (Sender = XPBustFrame.BackGroundVirtmage) Then
-        User.BuyBust(TUser.TBusts.XPBust, TaskListForm.XPBustFrame.CountLabel);
+        If (Sender = XPBustFrame.ButtonText) Or (Sender = XPBustFrame.BackGroundVirtmage) Then
+            User.BuyBust(TUser.TBusts.XPBust, TaskListForm.XPBustFrame.CountLabel);
 
-    If (Sender = CoinsBustFrame.ButtonText) Or (Sender = CoinsBustFrame.BackGroundVirtmage) Then
-        User.BuyBust(TUser.TBusts.CoinsBust, TaskListForm.CoinsFrame.CountLabel);
+        If (Sender = CoinsBustFrame.ButtonText) Or (Sender = CoinsBustFrame.BackGroundVirtmage) Then
+            User.BuyBust(TUser.TBusts.CoinsBust, TaskListForm.CoinsFrame.CountLabel);
 
-    If (Sender = TothemBustFrame.ButtonText) Or (Sender = TothemBustFrame.BackGroundVirtmage) Then
-        User.BuyBust(TUser.TBusts.Tothem, TaskListForm.TotemFrame.CountLabel);
+        If (Sender = TothemBustFrame.ButtonText) Or (Sender = TothemBustFrame.BackGroundVirtmage) Then
+            User.BuyBust(TUser.TBusts.Tothem, TaskListForm.TotemFrame.CountLabel);
 
-    If (Sender = FreeTaskBustFrame.ButtonText) Or (Sender = FreeTaskBustFrame.BackGroundVirtmage) Then
-        User.BuyBust(TUser.TBusts.FreeTask, TaskListForm.FreeTaskFrame.CountLabel);
+        If (Sender = FreeTaskBustFrame.ButtonText) Or (Sender = FreeTaskBustFrame.BackGroundVirtmage) Then
+            User.BuyBust(TUser.TBusts.FreeTask, TaskListForm.FreeTaskFrame.CountLabel);
 
-    If (Sender = SecretBoxFrame.ButtonText) Or (Sender = SecretBoxFrame.BackGroundVirtmage) Then
-        User.BuyBust(TUser.TBusts.SecretBox, TaskListForm.SecretBoxFrame.CountLabel);
+        If (Sender = SecretBoxFrame.ButtonText) Or (Sender = SecretBoxFrame.BackGroundVirtmage) Then
+            User.BuyBust(TUser.TBusts.SecretBox, TaskListForm.SecretBoxFrame.CountLabel);
 
-    CoinsLabel.Caption := IntToStr(User.Coins);
-    InputCostInCell(User.GetBustsCost());
-    CheckEnabled;
-    TaskListForm.UpDateUserInfo;
+        CoinsLabel.Caption := IntToStr(User.Coins);
+        InputCostInCell(User.GetBustsCost());
+        CheckEnabled;
+        TaskListForm.UpDateUserInfo;
+    End;
 End;
 
 { заполнение цен бонусов }
@@ -155,6 +164,9 @@ Begin
     TitleLabel.Font.Color := ClText;
     CoinsLabel.Font.Color := ClText;
     CoinsLabel.Caption := IntToStr(User.Coins);
+    TothemBust.Hint := 'Тотем. Возвращает все бонусы просроченой задачи в норму.'#13#10'Применяется автоматически при выполнении просроченой задачи.';
+    FreeTaskBust.Hint := 'Бесплатная задача. Зануляет все бонусы просроченой задачи в норму.'#13#10'Применяется автоматически при выполнении просроченой задачи.';
+    SecretBox.Hint := 'Секретный сундучок. Вы получите рандомный бонус из 8-ми.'#13#10'Шанс скоррестирован относительно цен.';
     CheckEnabled;
     InputCostInCell(User.GetBustsCost());
 End;

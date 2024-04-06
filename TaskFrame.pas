@@ -7,7 +7,9 @@ Uses
     Vcl.Forms,
     ButtonFrame,
     Vcl.VirtualImage,
-    Vcl.StdCtrls, Vcl.Controls, System.Classes;
+    Vcl.StdCtrls,
+    Vcl.Controls,
+    System.Classes;
 
 Type
     TTaskOutputFrame = Class(TFrame)
@@ -68,7 +70,7 @@ End;
 Procedure TTaskOutputFrame.CustomDblClick(Sender: TObject);
 Var
     Complexity: TComplexity;
-    Index: Integer;
+    Index, Position: Integer;
 Begin
     Index := GetCurentObjectIndex(Sender);
     NewTask := TasksList.SearchCurentTask(Index).Data;
@@ -80,18 +82,21 @@ Begin
     NewTaskForm.ShowModal;
     If (ChoosenOpenButton = Info) Then
     Begin
+        Position := TaskListForm.TasksListSclBox.VertScrollBar.Position;
+        TaskListForm.TasksListSclBox.VertScrollBar.Position := 0;
         Complexity := TasksList.SearchCurentTask(Index).Data.ComplexityDeterminant(NewTaskForm.ComplexityCBox.ItemIndex);
         TasksList.SearchCurentTask(Index).Data.InputMainData(NewTaskForm.TitleLEdit.Text, NewTaskForm.DateTPicker.Date,
             NewTaskForm.AboutTaskMemo.Text, Complexity);
         TasksList.InputInfoInTask(FArrayOfBlocks[Index], Index);
         ChoosenOpenButton := Nothing;
+        TaskListForm.TasksListSclBox.VertScrollBar.Position := Position;
     End;
 End;
 
 { обработка завершения задачи }
 Procedure TTaskOutputFrame.ApplyButtonClick(Sender: TObject);
 Var
-    ResultKey, Index: Integer;
+    ResultKey, Index, Position: Integer;
     CurentTask: TListOfTasks.PTasks;
     IsFreeTaskExist: Boolean;
 Begin
@@ -99,6 +104,8 @@ Begin
         MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2);
     If (ResultKey = ID_YES) Then
     Begin
+        Position := TaskListForm.TasksListSclBox.VertScrollBar.Position;
+        TaskListForm.TasksListSclBox.VertScrollBar.Position := 0;
         Index := GetCurentObjectIndex(Sender);
         CurentTask := TasksList.SearchCurentTask(Index);
         IsFreeTaskExist := User.FreeTaskUsed;
@@ -111,10 +118,10 @@ Begin
         TaskListForm.ShowHPBustVImage.Visible := False;
         TaskListForm.ShowXPBustVImage.Visible := False;
         TaskListForm.ShowCoinsBustVImage.Visible := False;
-
         If User.IsTotemUsed Then
             User.UseBust(TUser.TBusts.Tothem, TaskListForm.TotemFrame.CountLabel);
         User.IsTotemUsed := False;
+        TaskListForm.TasksListSclBox.VertScrollBar.Position := Position;
     End;
 End;
 

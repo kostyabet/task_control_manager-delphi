@@ -161,16 +161,21 @@ object NewTaskForm: TNewTaskForm
     Font.Name = 'Segoe UI'
     Font.Style = [fsBold]
     ParentFont = False
+    ParentShowHint = False
+    ShowHint = False
   end
   object TitleLEdit: TLabeledEdit
     Left = 56
     Top = 96
     Width = 307
     Height = 23
+    Hint = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1079#1072#1076#1072#1095#1080'.'
     EditLabel.Width = 48
     EditLabel.Height = 15
     EditLabel.Caption = 'TitleLEdit'
     MaxLength = 25
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 0
     Text = ''
     TextHint = #1047#1072#1076#1072#1095#1072
@@ -181,12 +186,15 @@ object NewTaskForm: TNewTaskForm
     Top = 96
     Width = 306
     Height = 21
+    Hint = #1057#1088#1086#1082' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1103'.'
     CalColors.BackColor = clScrollBar
     CalColors.TitleTextColor = clMedGray
     CalColors.MonthBackColor = clMedGray
     Date = 45376.000000000000000000
     Time = 0.923285231481713700
     Color = clWindowFrame
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 1
     Touch.ParentTabletOptions = False
     Touch.TabletOptions = [toPressAndHold]
@@ -196,7 +204,10 @@ object NewTaskForm: TNewTaskForm
     Top = 159
     Width = 652
     Height = 58
+    Hint = #1054#1087#1080#1096#1080#1090#1077' '#1089#1074#1086#1102' '#1079#1072#1076#1072#1095#1091'. *'#1053#1077#1086#1073#1103#1079#1072#1090#1077#1083#1100#1085#1072#1103' '#1095#1072#1089#1090#1100'*'
     MaxLength = 200
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 2
     OnChange = AboutTaskMemoChange
   end
@@ -205,10 +216,13 @@ object NewTaskForm: TNewTaskForm
     Top = 249
     Width = 307
     Height = 23
+    Hint = #1054#1087#1080#1096#1080#1090#1077' '#1087#1086#1076#1079#1072#1076#1072#1095#1091' '#1080' '#1085#1072#1078#1084#1080#1090#1077' '#1082#1085#1086#1087#1082#1091' '#1089#1087#1088#1072#1074#1072'.'
     EditLabel.Width = 67
     EditLabel.Height = 15
     EditLabel.Caption = 'LabeledEdit1'
     MaxLength = 25
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 3
     Text = ''
     TextHint = #1047#1072#1076#1072#1095#1072
@@ -219,6 +233,7 @@ object NewTaskForm: TNewTaskForm
     Top = 292
     Width = 131
     Height = 23
+    Hint = #1057#1083#1086#1078#1085#1086#1089#1090#1100' '#1079#1072#1076#1072#1095#1080'.'
     Style = csDropDownList
     Color = clWindowFrame
     ExtendedUI = True
@@ -230,6 +245,8 @@ object NewTaskForm: TNewTaskForm
     ImeMode = imDisable
     ItemIndex = 0
     ParentFont = False
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 4
     Text = #1051#1077#1075#1082#1086
     Items.Strings = (
@@ -252,8 +269,11 @@ object NewTaskForm: TNewTaskForm
     inherited BackGroundVirtmage: TVirtualImage
       Width = 100
       Height = 21
+      Hint = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1086#1076#1079#1072#1076#1072#1095#1091'.'
       Enabled = False
+      ParentShowHint = False
       Proportional = False
+      ShowHint = True
       OnClick = AddSubTaskFrameClick
       ExplicitWidth = 100
       ExplicitHeight = 21
@@ -262,9 +282,12 @@ object NewTaskForm: TNewTaskForm
       Left = 17
       Top = 2
       Width = 65
+      Hint = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1086#1076#1079#1072#1076#1072#1095#1091'.'
       Caption = #1044#1054#1041#1040#1042#1048#1058#1068
       Enabled = False
       Font.Color = clDefault
+      ParentShowHint = False
+      ShowHint = True
       OnClick = AddSubTaskFrameClick
       ExplicitLeft = 17
       ExplicitTop = 2
@@ -315,8 +338,11 @@ object NewTaskForm: TNewTaskForm
     inherited BackGroundVirtmage: TVirtualImage
       Width = 435
       Height = 21
+      Hint = #1055#1086#1076#1090#1074#1077#1088#1076#1080#1090#1100'.'
       Enabled = False
+      ParentShowHint = False
       Proportional = False
+      ShowHint = True
       OnClick = ApplyFrameClick
       ExplicitWidth = 435
       ExplicitHeight = 21
@@ -325,9 +351,12 @@ object NewTaskForm: TNewTaskForm
       Left = 135
       Top = 2
       Width = 163
+      Hint = #1055#1086#1076#1090#1074#1077#1088#1076#1080#1090#1100'.'
       Caption = #1055#1054#1044#1058#1042#1045#1056#1044#1048#1058#1068' '#1048#1047#1052#1045#1053#1045#1053#1048#1071
       Enabled = False
       Font.Color = clDefault
+      ParentShowHint = False
+      ShowHint = True
       OnClick = ApplyFrameClick
       ExplicitLeft = 135
       ExplicitTop = 2

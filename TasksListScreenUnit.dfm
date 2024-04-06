@@ -35,6 +35,7 @@ object TaskListForm: TTaskListForm
     Top = 130
     Width = 230
     Height = 216
+    Hint = #1047#1076#1077#1089#1100' '#1088#1072#1089#1087#1086#1083#1086#1078#1077#1085#1099' '#1074#1089#1077' '#1074#1072#1096#1080' '#1082#1091#1087#1083#1077#1085#1085#1099#1077' '#1073#1086#1085#1091#1089#1099'.'
     Color = clWhite
     Constraints.MaxHeight = 216
     Constraints.MaxWidth = 230
@@ -46,21 +47,30 @@ object TaskListForm: TTaskListForm
     Top = 100
     Width = 6
     Height = 15
+    Hint = #1050#1086#1083'-'#1074#1086' '#1074#1072#1096#1080#1093' '#1084#1086#1085#1077#1090'.'
     Caption = '0'
+    ParentShowHint = False
+    ShowHint = True
   end
   object LvlInfoLabel: TLabel
     Left = 225
     Top = 101
     Width = 12
     Height = 15
+    Hint = #1059#1088#1086#1074#1077#1085#1100'. '#1042#1083#1080#1103#1077#1090' '#1085#1072' '#1087#1088#1086#1082#1072#1095#1082#1091' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1103'.'
     Caption = 'lvl'
+    ParentShowHint = False
+    ShowHint = True
   end
   object LvlLabel: TLabel
     Left = 212
     Top = 101
     Width = 6
     Height = 15
+    Hint = #1042#1072#1096' '#1090#1077#1082#1091#1097#1080#1081' '#1091#1088#1086#1074#1077#1085#1100'.'
     Caption = '1'
+    ParentShowHint = False
+    ShowHint = True
   end
   object XPBox: TPaintBox
     Left = 95
@@ -89,28 +99,35 @@ object TaskListForm: TTaskListForm
     Top = 38
     Width = 10
     Height = 14
+    Hint = #1042#1072#1096' '#1086#1087#1099#1090'.'
     ImageCollection = IconsImgCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 1
     ImageName = 'EXPBUFF'
+    ParentShowHint = False
+    ShowHint = True
   end
   object HPicoVImage: TVirtualImage
     Left = 228
     Top = 70
     Width = 10
     Height = 14
+    Hint = #1042#1072#1096#1077' '#1079#1076#1086#1088#1086#1074#1100#1077'.'
     ImageCollection = IconsImgCollection
     ImageWidth = 0
     ImageHeight = 0
     ImageIndex = 0
     ImageName = 'HEALTHBUFF'
+    ParentShowHint = False
+    ShowHint = True
   end
   object CoinsVImage: TVirtualImage
     Left = 95
     Top = 103
     Width = 11
     Height = 11
+    Hint = #1042#1085#1091#1090#1088#1080#1080#1075#1088#1086#1074#1072#1103' '#1074#1072#1083#1102#1090#1072'. '#1053#1091#1078#1085#1072' '#1074' '#1084#1072#1075#1072#1079#1080#1085#1077'.'
     ImageCollection = IconsImgCollection
     ImageWidth = 0
     ImageHeight = 0
@@ -130,7 +147,10 @@ object TaskListForm: TTaskListForm
     inherited BackGroundVirtmage: TVirtualImage
       Width = 114
       Height = 31
+      Hint = #1058#1086' '#1084#1077#1089#1090#1086', '#1075#1076#1077' '#1074#1072#1096#1080' '#1084#1086#1085#1077#1090#1082#1080' '#1074#1072#1084' '#1086#1095#1077#1085#1100' '#1087#1088#1080#1075#1086#1076#1103#1090#1089#1103' :)'
       ImageCollection = nil
+      ParentShowHint = False
+      ShowHint = True
       OnClick = StoreButtonFrameClick
       ExplicitWidth = 114
       ExplicitHeight = 31
@@ -140,8 +160,11 @@ object TaskListForm: TTaskListForm
       Top = 6
       Width = 63
       Height = 17
+      Hint = #1058#1086' '#1084#1077#1089#1090#1086', '#1075#1076#1077' '#1074#1072#1096#1080' '#1084#1086#1085#1077#1090#1082#1080' '#1074#1072#1084' '#1086#1095#1077#1085#1100' '#1087#1088#1080#1075#1086#1076#1103#1090#1089#1103' :)'
       Caption = #1052#1040#1043#1040#1047#1048#1053
       Font.Height = -13
+      ParentShowHint = False
+      ShowHint = True
       OnClick = StoreButtonFrameClick
       ExplicitLeft = 26
       ExplicitTop = 6
@@ -162,9 +185,12 @@ object TaskListForm: TTaskListForm
     inherited BackGroundVirtmage: TVirtualImage
       Width = 230
       Height = 31
+      Hint = #1044#1086#1073#1072#1074#1100' '#1085#1086#1074#1091#1102' '#1079#1072#1076#1072#1095#1091' '#1080#1089#1087#1086#1083#1100#1079#1091#1103' '#1101#1090#1091' '#1082#1085#1086#1087#1082#1091'.'
       Align = alClient
       ImageCollection = nil
+      ParentShowHint = False
       Proportional = False
+      ShowHint = True
       OnClick = NewTaskAddClick
       ExplicitWidth = 230
       ExplicitHeight = 31
@@ -174,8 +200,11 @@ object TaskListForm: TTaskListForm
       Top = 6
       Width = 126
       Height = 17
+      Hint = #1044#1086#1073#1072#1074#1100' '#1085#1086#1074#1091#1102' '#1079#1072#1076#1072#1095#1091' '#1080#1089#1087#1086#1083#1100#1079#1091#1103' '#1101#1090#1091' '#1082#1085#1086#1087#1082#1091'.'
       Caption = #1044#1054#1041#1040#1042#1048#1058#1068' '#1047#1040#1044#1040#1063#1059
       Font.Height = -13
+      ParentShowHint = False
+      ShowHint = True
       OnClick = NewTaskAddClick
       ExplicitLeft = 53
       ExplicitTop = 6
@@ -196,7 +225,10 @@ object TaskListForm: TTaskListForm
     inherited BackGroundVirtmage: TVirtualImage
       Width = 114
       Height = 31
+      Hint = #1047#1072#1081#1076#1080' '#1089#1091#1076#1072' '#1080' '#1091#1079#1085#1072#1081', '#1095#1090#1086' '#1090#1091#1090' '#1074#1086#1086#1073#1097#1077' '#1087#1088#1086#1080#1089#1093#1086#1076#1080#1090'.'
       ImageCollection = nil
+      ParentShowHint = False
+      ShowHint = True
       OnClick = InstractionInfoClick
       ExplicitWidth = 114
       ExplicitHeight = 31
@@ -206,8 +238,11 @@ object TaskListForm: TTaskListForm
       Top = 6
       Width = 89
       Height = 17
+      Hint = #1047#1072#1081#1076#1080' '#1089#1091#1076#1072' '#1080' '#1091#1079#1085#1072#1081', '#1095#1090#1086' '#1090#1091#1090' '#1074#1086#1086#1073#1097#1077' '#1087#1088#1086#1080#1089#1093#1086#1076#1080#1090'.'
       Caption = #1048#1053#1057#1058#1056#1059#1050#1062#1048#1071
       Font.Height = -13
+      ParentShowHint = False
+      ShowHint = True
       OnClick = InstractionInfoClick
       ExplicitLeft = 12
       ExplicitTop = 6
@@ -243,12 +278,22 @@ object TaskListForm: TTaskListForm
     ExplicitTop = 138
     inherited BackGroundVImage: TVirtualImage
       ImageCollection = nil
+      ParentShowHint = False
+      ShowHint = True
       OnClick = nil
     end
     inherited BustVImage: TVirtualImage
+      Hint = #1041#1091#1090#1099#1083#1105#1082' '#1079#1076#1086#1088#1086#1074#1100#1103'. '#1052#1086#1084#1077#1085#1090#1072#1083#1100#1085#1086' '#1091#1074#1077#1083#1080#1095#1080#1090' '#1074#1072#1096#1077' '#1079#1076#1086#1088#1086#1074#1100#1077'.'
       ImageCollection = IconsImgCollection
       ImageIndex = 0
       ImageName = 'HEALTHBUFF'
+      ParentShowHint = False
+      ShowHint = True
+    end
+    inherited CountLabel: TLabel
+      Hint = #1050#1086#1083'-'#1074#1086' '#1077#1076#1080#1085#1080#1094' '#1073#1086#1085#1091#1089#1072'.'
+      ParentShowHint = False
+      ShowHint = True
     end
   end
   inline CoinsFrame: TBustFrame
@@ -263,9 +308,19 @@ object TaskListForm: TTaskListForm
       ImageCollection = nil
     end
     inherited BustVImage: TVirtualImage
+      Hint = 
+        #1050#1072#1088#1090#1086#1095#1082#1072' '#1084#1086#1085#1077#1090'. '#1055#1088#1080' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1080' '#1085#1086#1074#1086#1081' '#1079#1072#1076#1072#1095#1080' '#1074#1072#1096#1080' '#1084#1086#1085#1077#1090#1099' '#1091#1074#1077#1083#1080#1095#1072#1090 +
+        #1089#1103'.'
       ImageCollection = IconsImgCollection
       ImageIndex = 4
       ImageName = 'MONEYTICKET'
+      ParentShowHint = False
+      ShowHint = True
+    end
+    inherited CountLabel: TLabel
+      Hint = #1050#1086#1083'-'#1074#1086' '#1077#1076#1080#1085#1080#1094' '#1073#1086#1085#1091#1089#1072'.'
+      ParentShowHint = False
+      ShowHint = True
     end
   end
   inline XPFrame: TBustFrame
@@ -281,10 +336,18 @@ object TaskListForm: TTaskListForm
     end
     inherited BustVImage: TVirtualImage
       Left = 6
+      Hint = #1041#1091#1090#1099#1083#1105#1082' '#1086#1087#1099#1090#1072'. '#1052#1086#1084#1077#1085#1090#1072#1083#1100#1085#1086' '#1091#1074#1077#1083#1080#1095#1080#1090' '#1074#1072#1096' '#1086#1087#1099#1090'.'
       ImageCollection = IconsImgCollection
       ImageIndex = 1
       ImageName = 'EXPBUFF'
+      ParentShowHint = False
+      ShowHint = True
       ExplicitLeft = 6
+    end
+    inherited CountLabel: TLabel
+      Hint = #1050#1086#1083'-'#1074#1086' '#1077#1076#1080#1085#1080#1094' '#1073#1086#1085#1091#1089#1072'.'
+      ParentShowHint = False
+      ShowHint = True
     end
   end
   inline TotemFrame: TBustFrame
@@ -299,9 +362,19 @@ object TaskListForm: TTaskListForm
       ImageCollection = nil
     end
     inherited BustVImage: TVirtualImage
+      Hint = 
+        #1058#1086#1090#1077#1084'. '#1042#1086#1079#1074#1088#1072#1097#1072#1077#1090' '#1074#1089#1077' '#1073#1086#1085#1091#1089#1099' '#1087#1088#1086#1089#1088#1086#1095#1077#1085#1086#1081' '#1079#1072#1076#1072#1095#1080' '#1074' '#1085#1086#1088#1084#1091'. '#1055#1088#1080#1084#1077#1085#1103 +
+        #1077#1090#1089#1103' '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080' '#1087#1088#1080' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1080' '#1087#1088#1086#1089#1088#1086#1095#1077#1085#1086#1081' '#1079#1072#1076#1072#1095#1080'.'
       ImageCollection = IconsImgCollection
       ImageIndex = 5
       ImageName = 'TOTEM'
+      ParentShowHint = False
+      ShowHint = True
+    end
+    inherited CountLabel: TLabel
+      Hint = #1050#1086#1083'-'#1074#1086' '#1077#1076#1080#1085#1080#1094' '#1073#1086#1085#1091#1089#1072'.'
+      ParentShowHint = False
+      ShowHint = True
     end
   end
   inline HPBustFrame: TBustFrame
@@ -317,10 +390,20 @@ object TaskListForm: TTaskListForm
     end
     inherited BustVImage: TVirtualImage
       Left = 6
+      Hint = 
+        #1050#1072#1088#1090#1086#1095#1082#1072' '#1079#1076#1086#1088#1086#1074#1100#1103'. '#1055#1088#1080' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1080' '#1085#1086#1074#1086#1081' '#1079#1072#1076#1072#1095#1080' '#1074#1072#1096#1077' '#1079#1076#1086#1088#1086#1074#1100#1077' '#1091#1074#1077 +
+        #1083#1080#1095#1080#1090#1089#1103'.'
       ImageCollection = IconsImgCollection
       ImageIndex = 2
       ImageName = 'HPTICKET'
+      ParentShowHint = False
+      ShowHint = True
       ExplicitLeft = 6
+    end
+    inherited CountLabel: TLabel
+      Hint = #1050#1086#1083'-'#1074#1086' '#1077#1076#1080#1085#1080#1094' '#1073#1086#1085#1091#1089#1072'.'
+      ParentShowHint = False
+      ShowHint = True
     end
   end
   inline FreeTaskFrame: TBustFrame
@@ -335,9 +418,19 @@ object TaskListForm: TTaskListForm
       ImageCollection = nil
     end
     inherited BustVImage: TVirtualImage
+      Hint = 
+        #1041#1077#1089#1087#1083#1072#1090#1085#1072#1103' '#1079#1072#1076#1072#1095#1072'. '#1047#1072#1085#1091#1083#1103#1077#1090' '#1074#1089#1077' '#1073#1086#1085#1091#1089#1099' '#1087#1088#1086#1089#1088#1086#1095#1077#1085#1086#1081' '#1079#1072#1076#1072#1095#1080' '#1074' '#1085#1086#1088#1084 +
+        #1091'. '#1055#1088#1080#1084#1077#1085#1103#1077#1090#1089#1103' '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080' '#1087#1088#1080' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1080' '#1087#1088#1086#1089#1088#1086#1095#1077#1085#1086#1081' '#1079#1072#1076#1072#1095#1080'.'
       ImageCollection = IconsImgCollection
       ImageIndex = 6
       ImageName = 'FREETASK'
+      ParentShowHint = False
+      ShowHint = True
+    end
+    inherited CountLabel: TLabel
+      Hint = #1050#1086#1083'-'#1074#1086' '#1077#1076#1080#1085#1080#1094' '#1073#1086#1085#1091#1089#1072'.'
+      ParentShowHint = False
+      ShowHint = True
     end
   end
   inline XPBustFrame: TBustFrame
@@ -353,10 +446,18 @@ object TaskListForm: TTaskListForm
     end
     inherited BustVImage: TVirtualImage
       Left = 6
+      Hint = #1050#1072#1088#1090#1086#1095#1082#1072' '#1086#1087#1099#1090#1072'. '#1055#1088#1080' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1080' '#1085#1086#1074#1086#1081' '#1079#1072#1076#1072#1095#1080' '#1074#1072#1096' '#1086#1087#1099#1090' '#1091#1074#1077#1083#1080#1095#1080#1090#1089#1103'.'
       ImageCollection = IconsImgCollection
       ImageIndex = 3
       ImageName = 'XPTICKET'
+      ParentShowHint = False
+      ShowHint = True
       ExplicitLeft = 6
+    end
+    inherited CountLabel: TLabel
+      Hint = #1050#1086#1083'-'#1074#1086' '#1077#1076#1080#1085#1080#1094' '#1073#1086#1085#1091#1089#1072'.'
+      ParentShowHint = False
+      ShowHint = True
     end
   end
   inline SecretBoxFrame: TBustFrame
@@ -371,9 +472,19 @@ object TaskListForm: TTaskListForm
       ImageCollection = nil
     end
     inherited BustVImage: TVirtualImage
+      Hint = 
+        #1057#1077#1082#1088#1077#1090#1085#1099#1081' '#1089#1091#1085#1076#1091#1095#1086#1082'. '#1042#1099' '#1087#1086#1083#1091#1095#1080#1090#1077' '#1088#1072#1085#1076#1086#1084#1085#1099#1081' '#1073#1086#1085#1091#1089' '#1080#1079' 8-'#1084#1080'. '#1064#1072#1085#1089' '#1089#1082 +
+        #1086#1088#1088#1077#1089#1090#1080#1088#1086#1074#1072#1085' '#1086#1090#1085#1086#1089#1080#1090#1077#1083#1100#1085#1086' '#1094#1077#1085'.'
       ImageCollection = IconsImgCollection
       ImageIndex = 7
       ImageName = 'SECRETBOX'
+      ParentShowHint = False
+      ShowHint = True
+    end
+    inherited CountLabel: TLabel
+      Hint = #1050#1086#1083'-'#1074#1086' '#1077#1076#1080#1085#1080#1094' '#1073#1086#1085#1091#1089#1072'.'
+      ParentShowHint = False
+      ShowHint = True
     end
   end
   object UsedBonusPanel: TPanel
@@ -381,6 +492,7 @@ object TaskListForm: TTaskListForm
     Top = 10
     Width = 79
     Height = 104
+    Hint = #1047#1076#1077#1089#1100' '#1088#1072#1089#1087#1086#1083#1086#1078#1077#1085#1099' '#1074#1072#1096#1080' '#1072#1082#1090#1080#1074#1080#1088#1086#1074#1072#1085#1085#1099#1077' '#1073#1086#1085#1091#1089#1099'.'
     BorderStyle = bsSingle
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -388,6 +500,8 @@ object TaskListForm: TTaskListForm
     Font.Name = 'Segoe UI'
     Font.Style = []
     ParentFont = False
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 12
     object ShowCoinsBustVImage: TVirtualImage
       Left = 1
