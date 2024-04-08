@@ -87,7 +87,7 @@ Begin
         Complexity := TasksList.SearchCurentTask(Index).Data.ComplexityDeterminant(NewTaskForm.ComplexityCBox.ItemIndex);
         TasksList.SearchCurentTask(Index).Data.InputMainData(NewTaskForm.TitleLEdit.Text, NewTaskForm.DateTPicker.Date,
             NewTaskForm.AboutTaskMemo.Text, Complexity);
-        TasksList.InputInfoInTask(FArrayOfBlocks[Index], Index);
+        TasksList.InputInfoInOutputTask(FArrayOfBlocks[Index], Index);
         ChoosenOpenButton := Nothing;
         TaskListForm.TasksListSclBox.VertScrollBar.Position := Position;
     End;
@@ -100,27 +100,42 @@ Var
     CurentTask: TListOfTasks.PTasks;
     IsFreeTaskExist: Boolean;
 Begin
+    { уточнение у пользователя о его намерениях }
     ResultKey := Application.Messagebox('Вы уверенны, что хотите завершить задачу?', 'Сохранение',
         MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2);
+    { выполнится в случае, если пользователь не отказывается }
     If (ResultKey = ID_YES) Then
     Begin
+        { запоминаем текущую позицию ScrollBox пользователя }
         Position := TaskListForm.TasksListSclBox.VertScrollBar.Position;
+        { выставляем ScrollBox.Position в начальное положение }
         TaskListForm.TasksListSclBox.VertScrollBar.Position := 0;
+        { получаем индекс выбранной задачи }
         Index := GetCurentObjectIndex(Sender);
+        { получаем текущую задачу через полученый ранее индекс }
         CurentTask := TasksList.SearchCurentTask(Index);
+        { проверка на существование бонуса FreeTask }
         IsFreeTaskExist := User.FreeTaskUsed;
-        User.ApplyNewTask(User.GetTaskXP(CurentTask.Data), User.GetTaskHP(CurentTask.Data), User.GetTaskMoney(CurentTask.Data));
+        { запускаем код отвечающий за выполнение задачи }
+        User.ApplyTask(User.GetTaskXP(CurentTask.Data), User.GetTaskHP(CurentTask.Data), User.GetTaskMoney(CurentTask.Data));
+        { обнавляем основную информацию пользователя }
         TaskListForm.UpDateUserInfo;
+        { удаляем задачу из двунаправленного списка }
         TasksList.RemoveCurentTask(Index - 1);
+        { удаляем задачу из массива отображённых пользователю задач }
         TaskListForm.RemoveCompleteTask(Index);
+        { проверяем был ли использован бонус FreeTask }
         If IsFreeTaskExist And Not User.FreeTaskUsed Then
-            TaskListForm.FreeTaskVImage.Visible := False;
+            TaskListForm.FreeTaskVImage.Visible := False; //если да, скрываем его
+        { скрываем все возможно использованные ticket-бонусы }
         TaskListForm.ShowHPBustVImage.Visible := False;
         TaskListForm.ShowXPBustVImage.Visible := False;
         TaskListForm.ShowCoinsBustVImage.Visible := False;
+        { частная проверка на бонус totem }
         If User.IsTotemUsed Then
-            User.UseBust(TUser.TBusts.Tothem, TaskListForm.TotemFrame.CountLabel);
-        User.IsTotemUsed := False;
+            User.UseBust(TUser.TBusts.Tothem, TaskListForm.TotemFrame.CountLabel); //если был использован - фиксируем
+        User.IsTotemUsed := False; //возвращаем статус totem-а в стандарт
+        { возвращаем ScrollBox в пользовательское состояние }
         TaskListForm.TasksListSclBox.VertScrollBar.Position := Position;
     End;
 End;
@@ -134,7 +149,7 @@ Begin
     NewTask := TasksList.SearchCurentTask(Index).Data;
     Application.CreateForm(TSubTasksForm, SubTasksForm);
     SubTasksForm.ShowModal;
-    TasksList.InputInfoInTask(FArrayOfBlocks[Index], Index);
+    TasksList.InputInfoInOutputTask(FArrayOfBlocks[Index], Index);
 End;
 
 End.

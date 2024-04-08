@@ -18,7 +18,8 @@ Uses
     BustOutputFrame In 'BustOutputFrame.pas' {BustFrame: TFrame} ,
     SecretBoxUnit In 'SecretBoxUnit.pas' {SecreteBoxForm} ,
     ColorsUnit In 'ColorsUnit.pas',
-    LoadingScreenUnit In 'LoadingScreenUnit.pas' {LoadingScreen};
+    LoadingScreenUnit In 'LoadingScreenUnit.pas' {LoadingScreen} ,
+    AboutEditorUnit In 'AboutEditorUnit.pas' {AboutEditorForm};
 
 {$R *.res}
 

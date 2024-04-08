@@ -46,7 +46,7 @@ Implementation
 
 Uses
     ColorsUnit;
-    
+
 { алгоритм поиска случайного значения: "случайный алгоритм" }
 Function TSecreteBoxForm.CustomRandom: TUser.TBusts;
 Var

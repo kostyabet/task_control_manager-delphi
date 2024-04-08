@@ -340,12 +340,16 @@ Procedure TTask.InputNewSubTask(Title: String; Status: Boolean);
 Var
     NewSubTask: PSubTasks;
 Begin
+    { выделение памяти под подзадачу }
     New(NewSubTask);
-    NewSubTask.Title := StrToWideCharForTitle(Title);
-    NewSubTask.Status := Status;
-    NewSubTask.Next := Nil;
+    { заполнение нового узла }
+    NewSubTask.Title := StrToWideCharForTitle(Title); //наименование подзадачи
+    NewSubTask.Status := Status; //статус подзадачи (выполнено/невыполнено)
+    { включение узла в список }
+    NewSubTask.Next := Nil; //добавляем в конец
     FTailSubTask.Next := NewSubTask;
     FTailSubTask := NewSubTask;
+    { увеличиваем список подзадач на единицу }
     Inc(FSubTasksCounter);
 End;
 
@@ -534,9 +538,14 @@ Var
     ResultSubTask: PSubTasks;
     I: Integer;
 Begin
+    { выбор начального значения }
+    //головной элемент не является элементом списка,
+    //поэтому берём сразу следующий за ним
     ResultSubTask := FHeadSubTask.Next;
+    { осуществляем простой линейный поиск проходясь по всему списку до необходимого индекса }
     For I := 1 To Index Do
-        ResultSubTask := ResultSubTask.Next;
+        ResultSubTask := ResultSubTask.Next; //переходим на следующий узел
+    { определяем результат }
     SearchSubTask := ResultSubTask;
 End;
 
@@ -566,15 +575,24 @@ Var
     PrevSubTasks: PSubTasks;
     CurentSubTask: PSubTasks;
 Begin
+    { ищем удаляемый элемент }
+    //Index на 1 меньше, так как Head не элемент
     CurentSubTask := SearchSubTask(Index - 1);
+    { если текущая задача первая в списке }
     If (CurentSubTask = FHeadSubTask.Next) Then
-        PrevSubTasks := FHeadSubTask
+        PrevSubTasks := FHeadSubTask//то предыдущая задача = Head
+        { иначе }
     Else
+        //предыдущая задача определяется, как поиск текущей - 1
         PrevSubTasks := SearchSubTask(Index - 2);
+    { перераспределяем указатели }
     PrevSubTasks.Next := CurentSubTask.Next;
+    { если текущий узел хвостовой }
     If (CurentSubTask = FTailSubTask) Then
-        FTailSubTask := PrevSubTasks;
+        FTailSubTask := PrevSubTasks; //передвигаем хвост на предыдущий элемент
+    { очищаем памят выделенную под узел }
     Dispose(CurentSubTask);
+    { уменшаем счётчик подзадач на 1 }
     Dec(FSubTasksCounter);
 End;
 

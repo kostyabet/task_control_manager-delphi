@@ -53,6 +53,7 @@ Type
         CheckTaskTimer: TTimer;
         CoinsVImage: TVirtualImage;
         IconsImgCollection: TImageCollection;
+        AboutEditorFrame: TFrame1;
         Procedure FormCreate(Sender: TObject);
         Procedure BonusesPBoxPaint(Sender: TObject);
         Procedure TasksListPaintBoxPaint(Sender: TObject);
@@ -62,13 +63,15 @@ Type
         Procedure StoreButtonFrameClick(Sender: TObject);
         Procedure NewTaskAddClick(Sender: TObject);
         Procedure InstractionInfoClick(Sender: TObject);
-        Procedure AddNewBlockInBlocksArr;
+        Procedure OutputNewTaskFromArr;
         Procedure TasksListSclBoxMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
             Var Handled: Boolean);
         Procedure FormDestroy(Sender: TObject);
         Procedure CheckTaskTime(Sender: TObject);
         Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
         Function FormHelp(Command: Word; Data: NativeInt; Var CallHelp: Boolean): Boolean;
+        Procedure AboutEditorClick(Sender: TObject);
+        Procedure FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
     Private
 
     Public
@@ -102,7 +105,8 @@ Uses
     InstractionUnit,
     ProfileUnit,
     ColorsUnit,
-    LoadingScreenUnit;
+    LoadingScreenUnit,
+    AboutEditorUnit;
 
 { информация о количестве бонуса }
 Procedure TTaskListForm.ChangeBustsCounter(CountLabel: TLabel; TypeOfBust: TUser.TBusts);
@@ -194,23 +198,37 @@ Begin
     CoinsLabel.Caption := IntToStr(User.Coins);
 End;
 
+{ о разработчике }
+Procedure TTaskListForm.AboutEditorClick(Sender: TObject);
+Begin
+    Application.CreateForm(TAboutEditorForm, AboutEditorForm);
+    AboutEditorForm.ShowModal;
+End;
+
 { добавление нового блока задачи }
-Procedure TTaskListForm.AddNewBlockInBlocksArr;
+Procedure TTaskListForm.OutputNewTaskFromArr;
 Var
     TempArrOfBlocks: TArrayOfBlocks;
     I, Position: Integer;
 Begin
+    { запоминаем позицию ScrollBar }
     Position := TasksListSclBox.VertScrollBar.Position;
+    { прокручиваем ScrollBox в начало }
     TasksListSclBox.VertScrollBar.Position := 0;
+    { увеличиваем массив на единицу, чтобы добавить новый элемент }
     SetLength(TempArrOfBlocks, Length(FArrayOfBlocks) + 1);
+    { копируем массив }
     For I := Low(FArrayOfBlocks) To High(FArrayOfBlocks) Do
         TempArrOfBlocks[I] := FArrayOfBlocks[I];
+    { в пустом элементе массива создаём новый объект }
     TempArrOfBlocks[High(TempArrOfBlocks)] := TTaskOutputFrame.Create(TasksListPaintBox);
     TempArrOfBlocks[High(TempArrOfBlocks)].Name := 'Task' + IntToStr(High(TempArrOfBlocks));
     TempArrOfBlocks[High(TempArrOfBlocks)].Parent := TasksListSclBox;
-    TasksList.InputInfoInTask(TempArrOfBlocks[High(TempArrOfBlocks)], High(TempArrOfBlocks));
+    { заполняем основную информацию о задаче }
+    TasksList.InputInfoInOutputTask(TempArrOfBlocks[High(TempArrOfBlocks)], High(TempArrOfBlocks));
+    { завершаем отрисовку }
     FArrayOfBlocks := TempArrOfBlocks;
-    TasksListPaintBoxPaint(TasksListPaintBox);
+    { возвращаем позицию ScrollBox }
     TasksListSclBox.VertScrollBar.Position := Position;
 End;
 
@@ -249,7 +267,7 @@ Begin
     Application.Messagebox(PWideChar(ErrorStr), PWideChar(Caption), MB_OK + MB_ICONERROR + MB_DEFBUTTON2);
 End;
 
-{ инициализация данных }
+{ уточнение при выходе }
 Procedure TTaskListForm.FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
 Var
     ResultKey: Integer;
@@ -260,6 +278,7 @@ Begin
     CanClose := ResultKey = ID_YES;
 End;
 
+{ инициализация данных }
 Procedure TTaskListForm.FormCreate(Sender: TObject);
 Begin
     User := TUser.Create;
@@ -287,10 +306,20 @@ Begin
     TasksList.DestroyTaskList;
 End;
 
+{ удаление справки }
 Function TTaskListForm.FormHelp(Command: Word; Data: NativeInt; Var CallHelp: Boolean): Boolean;
 Begin
     CallHelp := False;
     FormHelp := False;
+End;
+
+Procedure TTaskListForm.FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+Begin
+    If (Key = VK_INSERT) Then
+    Begin
+        NewTaskAddClick(AddTaskFrame.ButtonText);
+    End;
+
 End;
 
 { нажатие на кнопку магазина }
@@ -300,6 +329,7 @@ Begin
     StoreForm.ShowModal;
 End;
 
+{ нажатие на кнопку инструкции }
 Procedure TTaskListForm.InstractionInfoClick(Sender: TObject);
 Begin
     Application.CreateForm(TInstractionForm, InstractionForm);
@@ -309,21 +339,33 @@ End;
 { доабвление новой задачи }
 Procedure TTaskListForm.NewTaskAddClick(Sender: TObject);
 Var
+    { переменная отвечающая за сложность }
     Complexity: TComplexity;
 Begin
+    { создание объекта класса новой задачи }
     NewTask := TTask.Create;
+    { присваивание текущей даты, как начальной }
     NewTaskForm.DateTPicker.Date := Now;
+    { выставление сложносто задачи на базовую }
     NewTaskForm.ComplexityCBox.ItemIndex := 0;
+    { очищение полей ввода }
     NewTaskForm.AboutTaskMemo.Text := '';
     NewTaskForm.TitleLEdit.Text := '';
     NewTaskForm.SubTitleLEdit.Text := '';
+    { отображение формы }
     NewTaskForm.ShowModal;
+    { проверка переменной состояния на то, что новая задача была введена }
     If (ChoosenOpenButton = Info) Then
     Begin
+        { определение сложности новой задачи }
         Complexity := NewTask.ComplexityDeterminant(NewTaskForm.ComplexityCBox.ItemIndex);
+        { ввод основной информации в задачу }
         NewTask.InputMainData(NewTaskForm.TitleLEdit.Text, NewTaskForm.DateTPicker.Date, NewTaskForm.AboutTaskMemo.Text, Complexity);
+        { добавление задачи в двунаправленный список }
         TasksList.AddTaskInList(NewTask);
-        TaskListForm.AddNewBlockInBlocksArr;
+        { добавление задачи в массив отрисованных задач и отрисовка задачи }
+        TaskListForm.OutputNewTaskFromArr;
+        { обнуление переменной состояния }
         ChoosenOpenButton := Nothing;
     End;
 End;

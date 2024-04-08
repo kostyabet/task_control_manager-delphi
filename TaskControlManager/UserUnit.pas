@@ -125,7 +125,7 @@ Type
         Function GetBustsCost(): TBustsCost;
         Procedure UseBust(TypeOfBust: TBusts; CountLabel: TLabel);
 
-        Procedure ApplyNewTask(XP_Val, HP_Val, Coins_Val: Int64);
+        Procedure ApplyTask(XP_Val, HP_Val, Coins_Val: Int64);
         Procedure BuyBust(TypeOfBust: TBusts; CountLabel: TLabel);
         Procedure SaveUserDataInFile;
         Procedure LoadUserDataFromFile;
@@ -324,8 +324,8 @@ End;
 { покупка бонуса }
 Procedure TUser.BuyBust(TypeOfBust: TBusts; CountLabel: TLabel);
 Begin
-    Inc(FBustBought[TypeOfBust]);
     FCoins := FCoins - FBustsCost[TypeOfBust];
+    Inc(FBustBought[TypeOfBust]);
     Inc(FBustsBuyCount);
     TaskListForm.ChangeBustsCounter(CountLabel, TypeOfBust);
 End;
@@ -359,6 +359,8 @@ End;
 
 { функция расчитывания цены задачи }
 Function TUser.CalculateAwards(Task: TTask; EasyVal, MediumVal, HardVal: Int64): Int64;
+Const
+    HalfCoef: Integer = 2;
 Var
     Coef, ResVal: Real;
     CurentDate: TDate;
@@ -378,7 +380,7 @@ Begin
     { проверка задачи по сроку выполнения }
     CurentDate := Date + EncodeTime(0, 0, 0, 0);
     If (Task.FTaskData.Date < CurentDate) Then
-        ResVal := -1 * (ResVal / 2);
+        ResVal := -1 * (ResVal / HalfCoef);
 
     CalculateAwards := Trunc(ResVal);
 End;
@@ -437,16 +439,17 @@ End;
 { рассчитывание нового опыта }
 Function TUser.CheckXP(TempXP: Int64): Int64;
 Begin
+    { пока текущий опыт больше границы }
     While (TempXP >= FNextLvlXP) Do
     Begin
-        TempXp := TempXp - FNextLvlXP;
+        TempXp := TempXp - FNextLvlXP; //уменшаем опыт
         FNextLvlXP := Trunc(XPIncrease * FNextLvlXP);
         FNextLvlHP := Trunc(HPIncrease * FNextLvlHP);
-        Inc(FCurentLvl);
+        Inc(FCurentLvl); //увеличиваем уровень
     End;
-
+    { проверяем на знак }
     TempXP := Ord(Not(TempXP < 0)) * TempXP;
-
+    { инициализируем результат }
     CheckXP := TempXP;
 End;
 
@@ -476,20 +479,21 @@ Begin
 End;
 
 { применение новой задачи }
-Procedure TUser.ApplyNewTask(XP_Val, HP_Val, Coins_Val: Int64);
+Procedure TUser.ApplyTask(XP_Val, HP_Val, Coins_Val: Int64);
 Var
     TempHp, TempXp: Int64;
 Begin
+    { присваивание начальных значений из ныне имеющихся }
     TempXP := FXP;
     TempHP := FHP;
+    { проверка на возможность и необходимость использования бонусов }
     CheckBonuses(XP_Val, HP_Val, Coins_Val, TempXP, TempHP);
-
+    { изменение монет }
     FCoins := Ord(Not(FCoins < 0)) * FCoins;
-
+    { изменение опыта }
     FXP := CheckXP(TempXp);
-
+    { изменение здоровья }
     FHP := CheckHP(TempHp);
-
     { обнуление бонусов }
     FHPBust := 0;
     FXPBust := 0;
@@ -548,7 +552,7 @@ Begin
     FNextLvlHP := UserInfo.FNextLvlHP;
     FCoins := UserInfo.Coins;
     FBustBought := UserInfo.BustBought;
-    ApplyNewTask(0, 0, 0);
+    ApplyTask(0, 0, 0);
     FXPBust := UserInfo.XPBust;
     FHPBust := UserInfo.HPBust;
     FCoinsBust := UserInfo.CoinsBust;
@@ -584,21 +588,28 @@ Procedure TUser.LoadUserDataFromFile;
 Var
     UserInfo: TUserInfo;
 Begin
+    { инициализация файла }
     Assign(UserInfoFile, UserinfoPath);
-    If Not FileExists(UserinfoPath) Then
-        Rewrite(UserInfoFile)
+    If Not FileExists(UserinfoPath) Then //если файл не создан
+        Rewrite(UserInfoFile)//создаём его
+        { иначе считываем }
     Else
     Begin
         Try
+            { подготавливаем к чтению }
             Reset(UserInfoFile);
             Try
+                { читаем из файла }
                 Read(UserInfoFile, UserInfo);
+                { используем полученую информацию }
                 InputDataInField(UserInfo);
             Except
+                { вызовется в случае ошибки считывания }
                 TaskListForm.ErrorExit('Ошибка при загрузке данных из файла.', 'Загрузка');
-                Rewrite(UserInfoFile);
+                Rewrite(UserInfoFile); //создаст пустой файл
             End;
         Finally
+            //закрываем далее ненужный файл
             Close(UserInfoFile);
         End;
     End;
@@ -609,16 +620,22 @@ Procedure TUser.SaveUserDataInFile;
 Var
     UserInfo: TUserInfo;
 Begin
+    { получаем запись информации пользователя }
     UserInfo := GetUserInfo;
+    { инициализируем фалй }
     Assign(UserInfoFile, UserinfoPath);
     Try
+        { очищаем всё, что есть в файле }
         Rewrite(UserInfoFile);
         Try
+            { записываем данные в файл }
             Write(UserInfoFile, UserInfo);
         Except
-            TaskListForm.ErrorExit('Ошибка при выгрузке данных в файл.', 'Сохранение');
+            { вызывается при ошибке записи в файл }
+            TaskListForm.ErrorExit('Ошибка при записи данных в файл.', 'Запись');
         End;
     Finally
+        { очищаем далее не нужный файл }
         Close(UserInfoFile);
     End;
 End;
