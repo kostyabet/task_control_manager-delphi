@@ -167,15 +167,16 @@ Const
     DefMargin: Integer = 8;
 Var
     TempArr: TArrayOfBlocks;
-    I: Integer;
+    I, CurI: Integer;
 Begin
     SetLength(TempArr, Length(FArrayOfBlocks) - 1);
     For I := Low(FArrayOfBlocks) To High(FArrayOfBlocks) Do
         If (I <> Index) Then
         Begin
-            FArrayOfBlocks[I].Name := 'Frame' + IntToStr(I - Ord(I > Index));
-            TempArr[I - Ord(I > Index)] := FArrayOfBlocks[I];
-            TempArr[I - Ord(I > Index)].Top := DefMargin + (I - Ord(I > Index)) * (DefMargin + TempArr[I - Ord(I > Index)].Height);
+            CurI := I - Ord(I > Index);
+            FArrayOfBlocks[I].Name := 'Frame' + IntToStr(CurI);
+            TempArr[CurI] := FArrayOfBlocks[I];
+            TempArr[CurI].Top := DefMargin + CurI * (DefMargin + TempArr[CurI].Height);
         End
         Else
             FArrayOfBlocks[I].Destroy;
